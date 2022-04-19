@@ -1,0 +1,9 @@
+{% extends 'itineraires/navBar.html' %} {% block content %}
+<div class="container-fluid !direction !spacing">
+  <h1>{{ object.name }}</h1>
+  <p>{{ object.content }}</p>
+  <p>Duration: {{ object.duration }}</p>
+  <p>Difficulty: {{ object.difficulty }}</p>
+  <p>Last visited: {{ now|date }}</p>
+</div>
+{% endblock content %}

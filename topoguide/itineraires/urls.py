@@ -1,12 +1,14 @@
 from django.urls import include, path
 
 from . import views
-from django.views.generic import TemplateView
 
 
 
 
-app_name = 'polls'
+app_name = 'itineraires'
 urlpatterns = [
-    path('', TemplateView.as_view(template_name="itineraires/auth.html")),
+    path('', views.ItineraireListView.as_view(),name='itinerairesList'),
+    path('', views.DetailView.as_view(),name='Detail'),
+    path('<int:pk>/', views.DetailView.as_view(), name='detail'),
+
 ]

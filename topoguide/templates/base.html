@@ -1,0 +1,23 @@
+{% load static %}
+{% load bootstrap5 %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="http://127.0.0.1:35729/livereload.js"></script>
+
+    {# Load CSS and JavaScript #}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+
+    {# Display django.contrib.messages as Bootstrap alerts #}
+    {% bootstrap_messages %}
+    <link rel="stylesheet" href="{% static 'itineraires/app.css' %}">
+    <title>{% block title %}Topoguide{% endblock %}</title>
+</head>
+
+<body>
+    {% block body %}{% endblock body %}
+</body>

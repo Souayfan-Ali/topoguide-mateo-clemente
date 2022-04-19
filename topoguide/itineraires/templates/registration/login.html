@@ -1,12 +1,18 @@
+{% extends 'base.html' %}
+
+{% load bootstrap5 %}
+
 {% block title%}
 Login Here
 {% endblock title %}
 
 
-{% block content %}
- <form method="post">
-   {% csrf_token %}
-   {{form}}
-   <button type="submit" class="btn btn-success">Login</button>
- </form>
-{% endblock content %}
+{% block body %}
+<div class="container !direction !spacing">
+  <form class="authForm" method="post">
+    {% csrf_token %}
+    {% bootstrap_form form%}
+    <button type="submit" class="btn btn-success">Login</button>
+  </form>
+</div>
+{% endblock body %}

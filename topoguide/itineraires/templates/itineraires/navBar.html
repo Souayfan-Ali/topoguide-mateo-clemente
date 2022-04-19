@@ -1,0 +1,31 @@
+{% extends 'base.html' %} 
+
+
+{% block body %}
+
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">dark</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#1"
+      aria-controls="1"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="1">
+      <div class="navbar-nav">
+        <a class="nav-link active" aria-current="page" href="#">Home</a>
+        <a class="nav-link active" aria-current="page" href={% url 'itineraires:itinerairesList' %}>Itinéraires</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+{% block content %}{% endblock content %}
+
+{% endblock body %}

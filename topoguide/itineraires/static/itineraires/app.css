@@ -1,3 +1,11 @@
-#linkIti a {
+#linkIti {
   text-decoration: none;
+}
+
+#linkIti div{
+  padding: 1em;
+}
+
+body {
+  overflow: hidden;
 }

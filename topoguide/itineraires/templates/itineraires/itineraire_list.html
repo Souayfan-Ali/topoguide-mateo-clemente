@@ -1,12 +1,26 @@
-{% extends 'itineraires/navBar.html' %}
-
-{% block content %}
+{% extends 'itineraires/navBar.html' %} {% block content %}
 
 <ul class="list-group">
-    {% for itineraire in object_list %}
-    <li id="linkIti" class="list-group-item"><a class="link-secondary" href="{% url 'itineraires:detail' itineraire.id %}">{{ itineraire.name }}</a></li>
-    {% endfor %}
+    <div class="row ${1| ,row-cols-2,row-cols-3, auto,justify-content-md-center,|}">
+        <div class="col-6 justify-content-md-center"><strong>Nom</strong></div>
+        <div class="col-3"><strong>Difficulté</strong></div>
+        <div class="col-3"><strong>Durée</strong></div>
+    </div>
+  {% for itineraire in object_list %}
 
-<ul>
-    
+  <a
+    id="linkIti"
+    class="row"
+    href="{% url 'itineraires:detail' itineraire.id %}"
+  >
+    <div class="col-6">{{ itineraire.name }}</div>
+    <div class="col-3">{{ itineraire.difficulty }}</div>
+    <div class="col-3">{{ itineraire.duration }}</div>
+  </a>
+
+  {% endfor %}
+
+
+</ul>
+
 {% endblock %}

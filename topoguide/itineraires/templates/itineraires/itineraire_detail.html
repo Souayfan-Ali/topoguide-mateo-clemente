@@ -1,9 +1,20 @@
 {% extends 'itineraires/navBar.html' %} {% block content %}
 <div class="container-fluid !direction !spacing">
-  <h1>{{ object.name }}</h1>
-  <p>{{ object.content }}</p>
-  <p>Duration: {{ object.duration }}</p>
-  <p>Difficulty: {{ object.difficulty }}</p>
-  <p>Last visited: {{ now|date }}</p>
+  <h1>{{ object.nom }}</h1>
+  <p>{{ object.description }}</p>
+  <p>Duration: {{ object.duree }}</p>
+  <p>Difficulty: {{ object.difficulte }}</p>
+  <p>Description: {{ object.pointDeDepart}}</p>
+  <p>Altitude de départ: {{ object.altitudeDeDepart }}</p>
+  <p>Altitude max: {{ object.altitudeMax }}</p>
+  <p>Denivelé :  positif {{ object.deniveleNegatif }}  negatif {{ object.deniveleNegatif}}</p>
 </div>
+
+<div class="container-fluid !direction !spacing">
+  aaaa
+  {% for sortie in  liste_sorties %}
+  <div>AAA</div>
+  {% endfor %}
+</div>
+
 {% endblock content %}

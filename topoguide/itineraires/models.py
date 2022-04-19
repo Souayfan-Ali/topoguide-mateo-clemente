@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.views import generic
@@ -9,24 +9,25 @@ from django.contrib.auth.models import User
 
 class Itineraire(models.Model):
 
-    name = models.CharField(max_length=200)
-    duration = models.DurationField()
-    difficulty = models.IntegerField(
+    nom = models.CharField(max_length=200)
+    duree = models.DurationField()
+    difficulte = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(5)])
-
+    pointDeDepart = models.CharField(max_length=200,null=True)
+    altitudeDepart = models.IntegerField(default=0)
+    altitudeMax = models.IntegerField(default=0)
+    denivelePositif = models.IntegerField(default=0)
+    deniveleNegatif = models.IntegerField(default=0)
+    description = models.TextField(null = True)
     def __str__(self):
-        return self.name
+        return self.nom
 
-
-class DetailsView(generic.DetailView):
-    model = Itineraire
-    template_name = 'itineraires/details.html'
 
 
 class Sortie(models.Model):
     randonneur = models.ForeignKey(User, on_delete=models.CASCADE)
     itineraire = models.ForeignKey(Itineraire, on_delete=models.CASCADE)
-    date_sortie = models.DateField(default=datetime.now())
+    date_sortie = models.DateField(default=timezone.now)
     duree = models.DurationField()
     difficulte = models.IntegerField(default=0,
         validators=[MinValueValidator(1), MaxValueValidator(5)])

@@ -4,7 +4,7 @@ from .models import Itineraire,Sortie
 
 
 class ItineraireAdmin(admin.ModelAdmin):
-    list_display = ('id','name', 'duration', 'difficulty')
+    list_display = ('id','nom', 'duree', 'difficulte')
 
 
 admin.site.register(Itineraire, ItineraireAdmin)

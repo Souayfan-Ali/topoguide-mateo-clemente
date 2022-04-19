@@ -1,0 +1,10 @@
+{% extends 'itineraires/navBar.html' %} {% block content %}
+<div class="container-fluid !direction !spacing">
+  <h1>{{ object.itineraire.nom }}</h1>
+  <p>Durée: {{ object.duree }}</p>
+  <p>Difficulté ressentie: {{ object.difficulte }}</p>
+  <p>Date de sortie: {{ object.date_sortie}}</p>
+  <p>Experience des participants : {{ object.experience }}</p>
+  <p>Météo : {{ object.meteo }}</p>
+</div>
+{% endblock content %}

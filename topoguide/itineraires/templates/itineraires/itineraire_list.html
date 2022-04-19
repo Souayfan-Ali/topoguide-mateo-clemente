@@ -13,9 +13,9 @@
     class="row"
     href="{% url 'itineraires:detail' itineraire.id %}"
   >
-    <div class="col-6">{{ itineraire.name }}</div>
-    <div class="col-3">{{ itineraire.difficulty }}</div>
-    <div class="col-3">{{ itineraire.duration }}</div>
+    <div class="col-6">{{ itineraire.nom }}</div>
+    <div class="col-3">{{ itineraire.difficulte }}</div>
+    <div class="col-3">{{ itineraire.duree }}</div>
   </a>
 
   {% endfor %}

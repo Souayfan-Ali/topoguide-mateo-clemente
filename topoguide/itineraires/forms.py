@@ -1,7 +1,7 @@
 from django import forms
+from .models import Sortie
 
-class authForm(forms.form):
-  template_name= 'login.html'
-  username = forms.CharField(label="Username")
-  password = forms.PasswordInput(label="Password")
-  date = forms.DateField(label='date')
+class SortieForm(forms.ModelForm):
+    class Meta:
+        model = Sortie
+        fields = '__all__' # ['name']

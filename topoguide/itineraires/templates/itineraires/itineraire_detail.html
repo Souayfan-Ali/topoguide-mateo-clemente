@@ -1,19 +1,54 @@
-{% extends 'itineraires/navBar.html' %} {% block content %}
-<div class="container-fluid !direction !spacing">
-  <h1>{{ object.nom }}</h1>
-  <p>{{ object.description }}</p>
-  <p>Duration: {{ object.duree }}</p>
-  <p>Difficulty: {{ object.difficulte }}</p>
-  <p>Description: {{ object.pointDeDepart}}</p>
-  <p>Altitude de départ: {{ object.altitudeDeDepart }}</p>
-  <p>Altitude max: {{ object.altitudeMax }}</p>
-  <p>Denivelé :  positif {{ object.deniveleNegatif }}  negatif {{ object.deniveleNegatif}}</p>
+{% extends 'itineraires/navBar.html' %}
+{% block content %}
+{% load static %}
+
+<div class="container-fluid  !spacing">
+  
+  <div class="row">
+    <div class="col-6 ">
+    <div class="card text-white bg-secondary">
+      <img class="card-img-top" src={% static 'itineraires/photo.jpg' %} alt="">
+      <div class="card-img-overlay">
+        <h4 class="card-title">{{object.nom}}</h4>
+        <p class="card-text">{{object.description}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 ">
+    <div class="card">
+      <div class="card-body">
+        <h1>{{ object.nom }}</h1>
+    <p>{{ object.description }}</p>
+    <p>Duration: {{ object.duree }}</p>
+    <p>Difficulty: {{ object.difficulte }}</p>
+    <p>Description: {{ object.pointDeDepart}}</p>
+    <p>Altitude de départ: {{ object.altitudeDeDepart }}</p>
+    <p>Altitude max: {{ object.altitudeMax }}</p>
+    <p>Denivelé :  positif {{ object.deniveleNegatif }}  negatif {{ object.deniveleNegatif}}</p>
+      </div>
+    </div>
+  </div>
 </div>
 
+
 <div class="container-fluid !direction !spacing">
-  aaaa
+  <h1>Sorties</h1>
+  <div class="row">
+    <div class="col-2 ">Date de sortie</div>    
+    <div class="col-2 ">Météo ce jour là</div>    
+    <div class="col-2 ">Niveau des randonneurs</div>    
+    <div class="col-2 ">Durée</div>    
+    <div class="col-2 ">Difficulté</div>    
+  </div>
   {% for sortie in  liste_sorties %}
-  <div>AAA</div>
+  <div class="row">
+    <div class="col-2 ">{{sortie.date_sortie}}</div>
+    <div class="col-2 ">{{sortie.get_meteo_display}}</div>
+    <div class="col-2 ">{{sortie.get_experience_display}}</div>
+    <div class="col-2 ">{{sortie.duree}}</div>
+    <div class="col-2 ">{{sortie.difficulte}}</div>
+    <div class="col-2 "><a name="" id="" class="btn btn-warning" href={% url 'itineraires:modification_sortie' sortie.id%} role="button">Modifier</a></div>
+  </div>
   {% endfor %}
 </div>
 

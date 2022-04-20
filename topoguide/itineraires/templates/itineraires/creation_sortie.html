@@ -1,0 +1,20 @@
+{% extends 'itineraires/navBar.html' %} {% load bootstrap5 %} 
+{% block title%}Nouvelle Sortie{% endblock title%}
+{% block content %}
+
+<div class="container-fluid !direction !spacing">
+  <form
+    action="{% url 'itineraires:creation_sortie' %}"
+    method="post"
+    class="form"
+  >
+    {% csrf_token %} {% bootstrap_form form %} {% buttons %}
+    <button type="submit" class="btn btn-success">Add</button>
+    <a href="{% url 'itineraires:liste_itineraires' %}" class="btn btn-danger"
+      >Cancel</a
+    >
+    {% endbuttons %}
+  </form>
+</div>
+
+{% endblock content %}

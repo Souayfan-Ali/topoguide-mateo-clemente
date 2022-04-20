@@ -1,0 +1,18 @@
+{% extends 'itineraires/navBar.html' %} {% load bootstrap5 %} 
+{% block title %}Modifier la sortie{% endblock title%} {% block content %}
+<div class="container-fluid !direction !spacing">
+  <form
+    action="{% url 'itineraires:modification_sortie' form.instance.id %}"
+    method="post"
+    class="form"
+  >
+    {% csrf_token %} {% bootstrap_form form %} {% buttons %}
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a href="{% url 'itineraires:liste_itineraires' %}" class="btn btn-primary"
+      >Cancel</a
+    >
+    {% endbuttons %}
+  </form>
+</div>
+
+{% endblock content %}

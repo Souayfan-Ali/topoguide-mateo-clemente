@@ -1,28 +1,22 @@
-{% extends 'base.html' %} 
+{# Definition de la barre de navigation qui sera sur toutes les pages #}
 
+{% extends 'base.html' %} 
+{% load static %}
 
 {% block body %}
 
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+<nav class="navbar navbar-dark bg-dark static-top">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">dark</a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-toggle="collapse"
-      data-target="#1"
-      aria-controls="1"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="1">
-      <div class="navbar-nav">
-        <a class="nav-link active" aria-current="page" href={% url 'itineraires:creation_sortie' %}>Nouvelle sortie</a>
-        <a class="nav-link active" aria-current="page" href={% url 'itineraires:liste_itineraires' %}>Itinéraires</a>
-      </div>
+    <div class="navbar-nav d-flex flex-row me-auto" >
+      <a class="navbar-brand" href="#">TOPOGUIDE</a>
+      <a class="nav-link active" aria-current="page" href={% url 'itineraires:liste_itineraires' %}>Itinéraires</a>
     </div>
+    {% if user.is_authenticated %}
+    <a name="" id="loginButton" class="btn btn-warning float-right mt-auto" href={% url 'logout' %} role="button" >Logout</a>
+    {% else %}
+    <a name="" id="loginButton" class="btn btn-success float-right mt-auto" href={% url 'login' %} role="button">Login</a>
+    {% endif %}
+
   </div>
 </nav>
 

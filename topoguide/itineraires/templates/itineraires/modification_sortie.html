@@ -1,5 +1,7 @@
+{# Permet la modification des sorties, accessible seulement à l'utilisatuer ayant crée la sortie #}
+
 {% extends 'itineraires/navBar.html' %} {% load bootstrap5 %} 
-{% block title %}Modifier la sortie{% endblock title%} {% block content %}
+  {% block title %}Modifier la sortie{% endblock title%} {% block content %}
 <div class="container-fluid !direction !spacing">
   <form
     action="{% url 'itineraires:modification_sortie' form.instance.id %}"

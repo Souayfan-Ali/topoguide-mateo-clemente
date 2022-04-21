@@ -1,26 +1,32 @@
+{# Très simple, affiche juste les itinéraires disponibles #}
+
 {% extends 'itineraires/navBar.html' %} {% block content %}
 
-<ul class="list-group">
-    <div class="row ${1| ,row-cols-2,row-cols-3, auto,justify-content-md-center,|}">
+
+<div class="container-fluid !justify !spacing p-3">
+  
+  <ul class="list-group pt-8">
+    <div class="row">
         <div class="col-6 justify-content-md-center"><strong>Nom</strong></div>
         <div class="col-3"><strong>Difficulté</strong></div>
         <div class="col-3"><strong>Durée</strong></div>
-    </div>
+      </div>
   {% for itineraire in object_list %}
-
+  
   <a
-    id="linkIti"
-    class="row"
-    href="{% url 'itineraires:detail' itineraire.id %}"
+  id="linkIti"
+  class="row secondary"
+  href="{% url 'itineraires:detail' itineraire.id %}"
   >
-    <div class="col-6">{{ itineraire.nom }}</div>
-    <div class="col-3">{{ itineraire.difficulte }}</div>
-    <div class="col-3">{{ itineraire.duree }}</div>
+  <div class="col-6 link-dark">{{ itineraire.nom }}</div>
+  <div class="col-3 link-dark">{{ itineraire.difficulte }}</div>
+  <div class="col-3 link-dark">{{ itineraire.duree }}</div>
   </a>
 
-  {% endfor %}
+{% endfor %}
 
 
 </ul>
+</div>
 
 {% endblock %}

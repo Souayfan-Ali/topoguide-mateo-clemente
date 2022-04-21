@@ -126,6 +126,9 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+#au login et logout on revient a la page 'principale'
 LOGIN_REDIRECT_URL = '/itineraires/'
+LOGOUT_REDIRECT_URL = '/itineraires/'
 
+#on n'utilise que les heures et minutes, plus pertinent pour les durées
 TIME_INPUT_FORMATS = ('%H:%M',)

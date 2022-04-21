@@ -1,3 +1,4 @@
+{# Authentification, très basique #}
 {% extends 'base.html' %}
 
 {% load bootstrap5 %}
@@ -9,6 +10,7 @@ Login Here
 
 {% block body %}
 <div class="container !direction !spacing">
+  <h1 class="display-1">Welcome to topoguide</h1>
   <form class="authForm" method="post">
     {% csrf_token %}
     {% bootstrap_form form%}

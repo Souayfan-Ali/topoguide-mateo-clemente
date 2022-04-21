@@ -4,20 +4,25 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.views import generic
 from django.contrib.auth.models import User
 
-# Create your models here.
+"""
+Seulement deux modeles liés :
+ - itinéraires
+ - Sorties
+"""
 
 
 class Itineraire(models.Model):
-
+    #certaines informations sont facultatives et seront affichées comme non connues dans le template associé
     nom = models.CharField(max_length=200)
     duree = models.DurationField()
+    #les validators permettent de borner directement les valeurs
     difficulte = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(5)])
     pointDeDepart = models.CharField(max_length=200,null=True)
-    altitudeDepart = models.IntegerField(default=0)
-    altitudeMax = models.IntegerField(default=0)
-    denivelePositif = models.IntegerField(default=0)
-    deniveleNegatif = models.IntegerField(default=0)
+    altitudeDepart = models.IntegerField(default=0,null=True)
+    altitudeMax = models.IntegerField(default=0,null=True)
+    denivelePositif = models.IntegerField(default=0,null=True)
+    deniveleNegatif = models.IntegerField(default=0,null=True)
     description = models.TextField(null = True)
     def __str__(self):
         return self.nom
@@ -25,6 +30,7 @@ class Itineraire(models.Model):
 
 
 class Sortie(models.Model):
+    #les validators permettent de borner directement les valeurs
     randonneur = models.ForeignKey(User, on_delete=models.CASCADE)
     itineraire = models.ForeignKey(Itineraire, on_delete=models.CASCADE)
     date_sortie = models.DateField(default=timezone.now)
@@ -33,6 +39,7 @@ class Sortie(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(5)])
     nbParticipants = models.IntegerField(validators=[MinValueValidator(1)])
 
+    #format le plus répandu trouvé pour les choix django, pas seule possibilité
     DEB = 1
     MIXTE = 2
     EXP = 3

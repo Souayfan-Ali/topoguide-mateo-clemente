@@ -18,21 +18,21 @@
             <!-- Indicators/dots -->
             <div class="carousel-indicators">
               <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
-              <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
-              <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+              {% for image in photos %}
+              <button type="button" data-bs-target="#demo" data-bs-slide-to={{forloop.counter}}></button>
+              {% endfor %}
             </div>
 
             <!-- The slideshow/carousel -->
             <div class="carousel-inner">
-              <div class="carousel-item active">
+              <div class="carousel-item ratio ratio-16x9 active">
                 <img class="card-img-top" src={% static 'itineraires/photo.jpg' %} alt="">
               </div>
-              <div class="carousel-item">
-                <img src="chicago.jpg" alt="Chicago" class="d-block" style="width:100%">
+              {% for image in photos %}
+              <div class="carousel-item ratio ratio-16x9">
+                <img src={{image.image.url}} alt="no img" class="img-fluid" style="width:100%">
               </div>
-              <div class="carousel-item">
-                <img src="ny.jpg" alt="New York" class="d-block" style="width:100%">
-              </div>
+              {% endfor %}
             </div>
 
             <!-- Left and right controls/icons -->
@@ -43,24 +43,21 @@
               <span class="carousel-control-next-icon"></span>
             </button>
           </div>
-
-
-
-
         </div>
       </div>
-    </div>
-    <div class="col-sm-6 pt-3 d-flex">
-      <div class="card w-100">
-        <div class="card-body">
-          <h1>{{ object.nom }}</h1>
-          <p>Duration: {{ object.duree }}</p>
-          <p>Difficulty: {{ object.difficulte }}</p>
-          <p>Point de départ: {{ object.pointDeDepart |default_if_none:"Non connu"}}</p>
-          <p>Altitude de départ: {{ object.altitudeDeDepart |default_if_none:"Non connue" }}</p>
-          <p>Altitude max: {{ object.altitudeMax |default_if_none:"Non connu" }}</p>
-          <p>Denivelé positif: {{ object.denivelePositif |default_if_none:"Non connu" }}</p>
-          <p>Denivelé negatif: {{object.deniveleNegatif |default_if_none:"Non connu"}}</p>
+
+      <div class="col-sm-6 pt-3 d-flex">
+        <div class="card w-100">
+          <div class="card-body">
+            <h1>{{ object.nom }}</h1>
+            <p>Duration: {{ object.duree }}</p>
+            <p>Difficulty: {{ object.difficulte }}</p>
+            <p>Point de départ: {{ object.pointDeDepart |default_if_none:"Non connu"}}</p>
+            <p>Altitude de départ: {{ object.altitudeDeDepart |default_if_none:"Non connue" }}</p>
+            <p>Altitude max: {{ object.altitudeMax |default_if_none:"Non connu" }}</p>
+            <p>Denivelé positif: {{ object.denivelePositif |default_if_none:"Non connu" }}</p>
+            <p>Denivelé negatif: {{object.deniveleNegatif |default_if_none:"Non connu"}}</p>
+          </div>
         </div>
       </div>
     </div>

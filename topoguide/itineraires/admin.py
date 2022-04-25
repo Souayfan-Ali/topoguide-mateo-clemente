@@ -20,4 +20,8 @@ class SortieAdmin(admin.ModelAdmin):
 
 admin.site.register(Sortie, SortieAdmin)
 
-admin.site.register(Image)
+class ImageAdmin(admin.ModelAdmin):
+    #la plupart des champs pourraient être utilisés, on les met tous
+    list_display = ('id', 'sortie','image')
+
+admin.site.register(Image,ImageAdmin)

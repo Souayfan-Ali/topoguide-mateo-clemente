@@ -30,7 +30,11 @@ class DetailView(generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["liste_sorties"] = Sortie.objects.filter(
-            itineraire__id=self.object.id)
+            itineraire__id=self.object.id
+        )
+        context['photos'] = Image.objects.filter(
+            sortie__itineraire__id = self.object.id
+        )
         return context
 
 

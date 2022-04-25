@@ -64,7 +64,7 @@ class Sortie(models.Model):
     meteo = models.IntegerField(choices=typeMeteo)
 
 def itineraire_img_name(instance, filename):
-    return '/'.join([instance.sortie.itineraire.nom, filename])
+    return ('/'.join([instance.sortie.itineraire.nom, filename])).replace(' ','_')
 
 
 class Image(models.Model):

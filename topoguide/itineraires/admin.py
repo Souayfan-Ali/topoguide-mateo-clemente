@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Itineraire, Sortie
+from .models import Image, Itineraire, Sortie
 # Register your models here.
 
 # classe des itinéraires
@@ -19,3 +19,5 @@ class SortieAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Sortie, SortieAdmin)
+
+admin.site.register(Image)

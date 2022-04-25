@@ -28,8 +28,6 @@ class Itineraire(models.Model):
     def __str__(self):
         return self.nom
 
-def itineraire_img_name(instance, filename):
-    return '/'.join(['content', instance.itineraire.nom, filename])
 
 class Sortie(models.Model):
     #les validators permettent de borner directement les valeurs
@@ -65,8 +63,12 @@ class Sortie(models.Model):
 
     meteo = models.IntegerField(choices=typeMeteo)
 
+def itineraire_img_name(instance, filename):
+    return '/'.join([instance.sortie.itineraire.nom, filename])
+
+
 class Image(models.Model):
     sortie = models.ForeignKey(Sortie,on_delete=models.CASCADE)
-    image = models.FileField(upload_to=itineraire_img_name)
+    image = models.ImageField(upload_to=itineraire_img_name,null=False)
 
 

@@ -14,3 +14,6 @@ urlpatterns = [
     path('sortie/suppression/<int:sortie_id>', views.SuppressionSortie, name='suppression_sortie'),
 
 ]
+
+
+

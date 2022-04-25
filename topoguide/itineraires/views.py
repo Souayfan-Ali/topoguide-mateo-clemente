@@ -1,4 +1,4 @@
-from asyncio.windows_events import NULL
+from sys import stderr
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.views import generic
@@ -69,23 +69,29 @@ def ModificationSortie(request, sortie_id):
 
     """
 
+
     #ici on vérifie que l'utilisateur qui modifie est le bon
     #Pas forcément utile pour un utilisateur normal car inaccessible dans le cas posant probleme sans trifouiller les urls, on n'est jamais trop prudents
     sortie_instance = Sortie.objects.get(pk=sortie_id)
-    imgs = Image.objects.filter(sortie_id=sortie_instance.id)
     if request.user != sortie_instance.randonneur:
         return redirect('itineraires:detail', pk=sortie_instance.itineraire.id)
     if request.method == 'GET':
         form = SortieForm(instance=sortie_instance)
-        imgForm = ImageForm()
+        imgForm = ImageForm(request.POST,request.FILES)
     elif request.method == 'POST':
         form = SortieForm(request.POST, instance=sortie_instance)
-        imgForm = ImageForm(request.POST)
+        imgForm = ImageForm(request.POST,request.FILES)
         if form.is_valid():
             form.save()
-            if imgForm.is_valid() and imgForm.instance.image:
-                imgForm.instance.sortie = sortie_instance
-                imgForm.save()      
+            if imgForm.is_valid():
+                images = request.FILES.getlist('images')
+                if not images:
+                    redirect('admin')
+                for im in images:   
+                    Image.objects.create(
+                        sortie = sortie_instance,
+                        image = im
+                    )
             #ce redirect renvoie vers l'itinéraire où l'on se trouvait avant la modification de sortie
             return redirect('itineraires:detail', pk=form.cleaned_data['itineraire'].id)
     return render(request, 'itineraires/modification_sortie.html', {'form': form,'imgForm':imgForm})

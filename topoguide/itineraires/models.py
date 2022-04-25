@@ -14,6 +14,7 @@ Seulement deux modeles liés :
 class Itineraire(models.Model):
     #certaines informations sont facultatives et seront affichées comme non connues dans le template associé
     nom = models.CharField(max_length=200)
+
     duree = models.DurationField()
     #les validators permettent de borner directement les valeurs
     difficulte = models.IntegerField(
@@ -27,7 +28,8 @@ class Itineraire(models.Model):
     def __str__(self):
         return self.nom
 
-
+def itineraire_img_name(instance, filename):
+    return '/'.join(['content', instance.itineraire.nom, filename])
 
 class Sortie(models.Model):
     #les validators permettent de borner directement les valeurs
@@ -62,3 +64,9 @@ class Sortie(models.Model):
     ]
 
     meteo = models.IntegerField(choices=typeMeteo)
+
+class Image(models.Model):
+    sortie = models.ForeignKey(Sortie,on_delete=models.CASCADE)
+    image = models.FileField(upload_to=itineraire_img_name)
+
+

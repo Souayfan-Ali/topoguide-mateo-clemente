@@ -1,5 +1,6 @@
+  
 from django import forms
-from .models import Sortie
+from .models import Image, Sortie
 
 class SortieForm(forms.ModelForm):
     """
@@ -10,4 +11,24 @@ class SortieForm(forms.ModelForm):
         exclude = ('randonneur',)
         model = Sortie
         fields = '__all__' # ['name']
+
         
+
+class ImageForm(forms.ModelForm):
+    """
+    Form d'ajout de photo pour les sorties
+    """
+
+    #nécéssaire pour que l'on puisse modifier une sortie sans forcément ajouter de photo
+    def __init__(self, *args, **kwargs):
+        super(ImageForm,self).__init__(*args, **kwargs)
+        self.fields['image'].required = False
+
+
+    class Meta:
+        #la sortie sera associée automatiquement
+        model = Image
+        fields=['image',]
+        widgets = {
+            'image': forms.ClearableFileInput(attrs={'multiple': True,'required':False})
+        }

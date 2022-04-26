@@ -13,7 +13,8 @@
     </div>
 
     <div class="navbar-nav d-flex flex-row me-auto">
-      <form method="POST">
+      <form method="POST" action={% url 'itineraires:searchResults' %}>
+        {% csrf_token %}
         <label for="search"></label>
         <input type="search" id="search" name="search" placeholder="Search...">
         <input type="submit" value="OK">

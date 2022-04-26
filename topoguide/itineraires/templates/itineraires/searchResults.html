@@ -2,7 +2,51 @@
 
 
 {% block content %}
+
 <h1>Résulats de la recherche</h1>
+
+
+{% if liste_itinineraires %}
+
+    <table>
+        <tr>
+            <th>Itinéraire</th>
+            <th>Durée</th>
+            <th>Difficultée</th>
+        </tr>
+
+        {% for itineraire_double in liste_itinineraires %}
+            <tr>
+                <td>{{ itineraire_double.0.nom }}</td>
+                <td>{{ itineraire_double.0.duree }}</td>
+                <td>{{ itineraire_double.0.difficulte }}</td>
+
+            </tr>
+
+            {% if itineraire_double.1 == "description" %}
+                <tr>
+                    <td></td>
+                    <th>Description</th>
+                    <td>{{ itineraire_double.0.description }}</td>
+                </tr>
+            {% endif %}
+
+            {% if itineraire_double.1 == "pointDeDepart" %}
+            <tr>
+                <td></td>
+                <th>Point De Depart</th>
+                <td>{{ itineraire_double.0.pointDeDepart }}</td>
+            </tr>
+            {% endif %}
+
+        {% endfor %}
+    </table>
+
+{% endif %}
+
+{% if not liste_itinineraires %}
+    Rien ne correspond à "{{ key_word }}"
+{% endif %}
 
 {% endblock content %}
 

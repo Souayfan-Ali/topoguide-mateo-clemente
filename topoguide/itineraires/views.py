@@ -105,4 +105,19 @@ def SearchResults(request):
     
     """
     context = {}
+
+    if request.method == "POST":
+        key_word = request.POST.get("search")
+        context["key_word"]=key_word
+        print(f"key_word = {key_word} type={type(key_word)}")
+
+        if key_word == "":
+            print(True)
+            render(request, "itineraires/searchResults.html", context)
+
+        else:
+            liste_itinineraires = Itineraire.get_from_key_word(key_word)
+        
+            context["liste_itinineraires"]=liste_itinineraires
+        
     return render(request, "itineraires/searchResults.html", context)

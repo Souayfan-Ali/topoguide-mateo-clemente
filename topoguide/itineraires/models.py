@@ -1,3 +1,4 @@
+from ast import keyword
 from django.utils import timezone
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -26,6 +27,24 @@ class Itineraire(models.Model):
     description = models.TextField(null = True)
     def __str__(self):
         return self.nom
+
+    def get_from_key_word(key_word):
+        """
+        Création d'une liste de double contenant l'itinéraire avec le mot clé correspondant
+        et l'endroit ou le mot clé a été trouvé
+        """
+        itineraires_key_word_in_title = Itineraire.objects.filter(nom__icontains=key_word)
+        itineraires_key_word_in_title_list = [(itineraire, "title") for itineraire in itineraires_key_word_in_title]
+
+        itineraires_key_word_in_description = Itineraire.objects.filter(description__icontains=key_word)
+        itineraires_key_word_in_description_list = [(itineraire, "description") for itineraire in itineraires_key_word_in_description]        
+
+        itineraires_key_word_in_pointDeDepart = Itineraire.objects.filter(pointDeDepart__icontains=key_word)
+        itineraires_key_word_in_pointDeDepart_list = [(itineraire, "pointDeDepart") for itineraire in itineraires_key_word_in_pointDeDepart]        
+
+        itineraires_key_word_all_list = itineraires_key_word_in_title_list + itineraires_key_word_in_description_list + itineraires_key_word_in_pointDeDepart_list
+
+        return itineraires_key_word_all_list
 
 
 

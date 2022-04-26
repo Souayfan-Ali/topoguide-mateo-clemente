@@ -11,6 +11,15 @@
       <a class="navbar-brand" href="#">TOPOGUIDE</a>
       <a class="nav-link active" aria-current="page" href={% url 'itineraires:liste_itineraires' %}>Itinéraires</a>
     </div>
+
+    <div class="navbar-nav d-flex flex-row me-auto">
+      <form method="POST">
+        <label for="search"></label>
+        <input type="search" id="search" name="search" placeholder="Search...">
+        <input type="submit" value="OK">
+      </form>
+    </div>
+    
     {% if user.is_authenticated %}
     <a name="" id="loginButton" class="btn btn-warning float-right mt-auto" href={% url 'logout' %} role="button" >Logout</a>
     {% else %}

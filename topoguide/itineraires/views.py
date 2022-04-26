@@ -99,3 +99,10 @@ def SuppressionSortie(request,sortie_id):
     return redirect('itineraires:detail', pk=s_id)
 
 
+def SearchResults(request):
+    """
+    Vue qui affiche les résultats de la recherche
+    
+    """
+    context = {}
+    return render(request, "itineraires/searchResults.html", context)

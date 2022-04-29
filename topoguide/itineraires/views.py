@@ -104,25 +104,50 @@ def SearchResults(request):
     Vue qui affiche les résultats de la recherche
     
     """
+    #Initialisation de la variable de contexte
     context = {}
 
     #Si une recherche a été effectuée on renvoie les résulats sur la page searchResults.html
     if request.method == "POST":
+
+        #On récupères les données du formulaire de recherche
         key_word = request.POST.get("search")
+        filtre = request.POST.get("filtre")
         context["key_word"]=key_word
-        print(f"key_word = {key_word} type={type(key_word)}")
 
         #Si l'utilisateur n'a pas entrée de mot (directement cliqué sur ok) on ne prend pas la peine de chercher
         #un résulat correspondant
         if key_word == "" or key_word == " ":
             render(request, "itineraires/searchResults.html", context)
 
-        #Sinon on cherche dans les sorties et les itinéraires si le mot clé apparaît
-        else:
+        #Si le filtre est sur "aucun" on récupère les sorties les itinéraires et les commentaires où le mot clé apparaît
+        if(filtre == "aucun"):
             liste_itinineraires = Itineraire.get_from_key_word(key_word)
-            liste_sorties =Sortie.get_from_key_word(key_word)
+            liste_sorties = Sortie.get_from_key_word(key_word)
+            liste_commentaires = []
+
+        #Si on filtre sur la date on récupère seulement les sorties ou le mot clé apparait et on trie par la date la liste des sorties
+        if(filtre == "date-recente" or filtre == "date-ancienne"):
+            liste_sorties = Sortie.get_from_key_word(key_word)
+            liste_sorties = Sortie.filtrer(filtre, liste_sorties)
+            liste_itinineraires = []
+            liste_commentaires = []
+
+        #Si on filtre sur la popularite/difficultée/durée/niveau d'expérience on récupère les itinéraires ou le mot clé apparait et on trie ces listes
+        if(filtre == "popularite-decroissante"
+         or filtre == "difficultee-croissante-moy"
+         or filtre == "duree-croissante-moy"
+         or filtre == "niveau-exp-decroissant-moy"):
+            liste_itinineraires = Itineraire.get_from_key_word(key_word)
+            liste_itinineraires = Itineraire.filtrer(filtre, liste_itinineraires)
+            liste_sorties = []
+            liste_commentaires = []
+
         
-            context["liste_itinineraires"]=liste_itinineraires
-            context["liste_sorties"]=liste_sorties
+        #Mise à jour des context
+        context["liste_itinineraires"]=liste_itinineraires
+        context["liste_sorties"]=liste_sorties
+        context["liste_commentaires"]=liste_commentaires
+
         
     return render(request, "itineraires/searchResults.html", context)

@@ -15,9 +15,27 @@
     <div class="navbar-nav d-flex flex-row me-auto">
       <form method="POST" action={% url 'itineraires:searchResults' %}>
         {% csrf_token %}
+
+        <label for="filtre">Filtrer</label>
+        <select name="filtre" id="filtre">
+          <option value="aucun">Aucun</option>
+          <optgroup label="Sorties">
+            <option value="date-recente">Date (Récente)</option>
+            <option value="date-ancienne">Date (Ancienne)</option>
+          </optgroup>
+          <optgroup label="Itineraires">
+            <option value="popularite-decroissante">Popularité</option>
+            <option value="difficultee-croissante-moy">Difficultee</option>
+            <option value="duree-croissante-moy">Durée</option>
+            <option value="niveau-exp-decroissant-moy">Niveau d'expérience</option>
+          </optgroup>
+        </select>
+
         <label for="search"></label>
         <input type="search" id="search" name="search" placeholder="Search...">
+        
         <input type="submit" value="OK">
+
       </form>
     </div>
     

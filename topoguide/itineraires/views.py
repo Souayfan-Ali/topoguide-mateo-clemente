@@ -106,18 +106,23 @@ def SearchResults(request):
     """
     context = {}
 
+    #Si une recherche a été effectuée on renvoie les résulats sur la page searchResults.html
     if request.method == "POST":
         key_word = request.POST.get("search")
         context["key_word"]=key_word
         print(f"key_word = {key_word} type={type(key_word)}")
 
-        if key_word == "":
-            print(True)
+        #Si l'utilisateur n'a pas entrée de mot (directement cliqué sur ok) on ne prend pas la peine de chercher
+        #un résulat correspondant
+        if key_word == "" or key_word == " ":
             render(request, "itineraires/searchResults.html", context)
 
+        #Sinon on cherche dans les sorties et les itinéraires si le mot clé apparaît
         else:
             liste_itinineraires = Itineraire.get_from_key_word(key_word)
+            liste_sorties =Sortie.get_from_key_word(key_word)
         
             context["liste_itinineraires"]=liste_itinineraires
+            context["liste_sorties"]=liste_sorties
         
     return render(request, "itineraires/searchResults.html", context)

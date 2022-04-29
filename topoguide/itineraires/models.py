@@ -81,3 +81,17 @@ class Sortie(models.Model):
     ]
 
     meteo = models.IntegerField(choices=typeMeteo)
+
+
+
+    def get_from_key_word(key_word):
+        """
+        Création d'une liste de double contenant la sortie avec le mot clé correspondant
+        et l'endroit ou le mot clé a été trouvé
+        """
+        sorties_key_word_in_randonneur = Sortie.objects.filter(randonneur__username__icontains=key_word)
+        sorties_key_word_in_randonneur_list = [(itineraire, "randonneur") for itineraire in sorties_key_word_in_randonneur]
+
+        sortie_key_word_list = sorties_key_word_in_randonneur_list
+      
+        return sortie_key_word_list

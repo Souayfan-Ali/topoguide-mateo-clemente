@@ -1,3 +1,4 @@
+from email.mime import image
 from sys import stderr
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
@@ -88,9 +89,8 @@ def ModificationSortie(request, sortie_id):
         if form.is_valid():
             form.save()
             if imgForm.is_valid():
+                #pour chaque image donnee on cree un objet
                 images = request.FILES.getlist('images')
-                if not images:
-                    redirect('admin')
                 for im in images:   
                     Image.objects.create(
                         sortie = sortie_instance,
@@ -114,6 +114,24 @@ def SuppressionSortie(request,sortie_id):
     s_id = sortie.itineraire.id
     sortie.delete()
     return redirect('itineraires:detail', pk=s_id)
+
+@login_required
+def SuppressionImage(request,image_id):
+    """
+    Vue de suppression d'une sortie, relativement similaire a la création.
+
+    """  
+    #ici on vérifie que l'utilisateur qui modifie est le bon
+    image = Image.objects.get(pk=image_id)
+    if request.user != image.sortie.randonneur:
+        return redirect('itineraires:detail', pk=image.sortie.itineraire.id)
+    #on garde l'id avant de supprimer pour pouvoir rediriger vers une page cohérente
+    i_id = image.id
+    image.delete()
+
+    return redirect('itineraires:detail', pk=image.sortie.itineraire.id)
+
+
 
 
 

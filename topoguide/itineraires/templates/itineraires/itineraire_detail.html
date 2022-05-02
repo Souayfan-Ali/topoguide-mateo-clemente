@@ -6,7 +6,7 @@
 <div class="container-fluid h-100">
   <div class="row">
     <div class="col-sm-6 pt-3 d-flex">
-      <div id="imgCard" class="card text-white bg-secondary w-100">
+      <div id="imgCard" class="card text-white bg-transparent w-100">
         {% comment %} <img class="card-img-top" src={% static 'itineraires/photo.jpg' %} alt="">
         <div class="card-img-overlay">
           <h4 class="card-title">{{object.nom}}</h4>
@@ -24,14 +24,21 @@
             </div>
 
             <!-- The slideshow/carousel -->
-            <div class="carousel-inner h-100">
-              <div class="carousel-item active h-100">
-                <img class="card-img-top mx-auto " src={% static 'itineraires/photo.jpg' %} alt="">
-              </div>
+            <div class="carousel-inner bg-transparent">
               {% for image in photos %}
-              <div class="carousel-item">
-                <img src={{image.image.url}} alt="no img" class="card-img-top mx-auto">
+              {% if forloop.first %}
+              <div class="carousel-item active h-100 ">
+                <img class="card-img-top mx-auto " src={% static 'itineraires/photo.jpg' %} alt="">
+                <a style="z-index:100" class="btn position-absolute start-0 {% if user != sortie.randonneur %}disabled d-none{% endif %}"
+                href={% url 'itineraires:suppression_image' image.id%} role="button">&times</a>
               </div>
+              {% else %}
+              <div class="carousel-item" >
+                <img src={{image.image.url}} alt="no img" class="img-fluid">
+                  <a style="z-index:100" class="btn btn-close btn-close-white p-3 position-absolute start-0 {% if user != image.sortie.randonneur %}disabled d-none{% endif %}"
+                  href={% url 'itineraires:suppression_image' image.id%} role="button"></a>
+              </div>
+              {% endif %}
               {% endfor %}
             </div>
 

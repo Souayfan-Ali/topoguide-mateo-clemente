@@ -12,6 +12,7 @@ urlpatterns = [
     path('sortie/creation/', views.CreationSortie, name='creation_sortie'),
     path('sortie/modification/<int:sortie_id>', views.ModificationSortie, name='modification_sortie'),
     path('sortie/suppression/<int:sortie_id>', views.SuppressionSortie, name='suppression_sortie'),
+    path('image/suppression/<int:image_id>', views.SuppressionImage, name='suppression_image'),
 
 ]
 

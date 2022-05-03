@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Image, Itineraire, Sortie
+from .models import Commentaire, Image, Itineraire, Sortie
 # Register your models here.
 
 # classe des itinéraires
@@ -25,3 +25,5 @@ class ImageAdmin(admin.ModelAdmin):
     list_display = ('id', 'sortie','image')
 
 admin.site.register(Image,ImageAdmin)
+
+admin.site.register(Commentaire)

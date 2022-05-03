@@ -85,8 +85,9 @@
                 role="button">+</a>
             </div>
             <div class="d-flex btn-group ms-auto">
-              <button class="btn btn-outline-info pt-1 w-100" role="button" data-bs-toggle="collapse" data-bs-target="#textform" onclick="document.getElementById('combutton').click()" >+</button>
-              <button id="combutton"class=" btn btn-outline-info  " type="button" data-bs-target="#demo2"
+              <button class="btn btn-outline-info pt-1 w-100" role="button" data-bs-toggle="collapse"
+                data-bs-target="#textform" onclick="document.getElementById('combutton').click()">+</button>
+              <button id="combutton" class=" btn btn-outline-info  " type="button" data-bs-target="#demo2"
                 data-bs-slide="next">Commentaires</button>
 
             </div>
@@ -160,12 +161,15 @@
               <div class="carousel-item active">
                 <div id="commentaires" class="list-group pt-3">
                   <div class="collapse" id="textform">
+                    <form method="post" class="form">
 
-                    {% csrf_token %}
-                    {% bootstrap_form form%}
-                    {% buttons %}
-                    <button>OK</button>
-                    {% endbuttons %}
+                      {% csrf_token %}
+                      {% bootstrap_form form%}
+                      {% buttons %}
+                      <button type="submit">OK</button>
+                      {% endbuttons %}
+                    </form>
+
                   </div>
                   {% for commentaire in commentaires %}
                   <li class="list-group-item border-0">

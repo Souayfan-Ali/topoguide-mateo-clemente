@@ -114,6 +114,7 @@ def SearchResults(request):
         key_word = request.POST.get("search")
         filtre = request.POST.get("filtre")
         context["key_word"]=key_word
+        context["filtre"]=filtre
 
         #Si l'utilisateur n'a pas entrée de mot (directement cliqué sur ok) on ne prend pas la peine de chercher
         #un résulat correspondant
@@ -139,7 +140,7 @@ def SearchResults(request):
          or filtre == "duree-croissante-moy"
          or filtre == "niveau-exp-decroissant-moy"):
             liste_itinineraires = Itineraire.get_from_key_word(key_word)
-            #liste_itinineraires = Itineraire.filtrer(filtre, liste_itinineraires)
+            liste_itinineraires = Itineraire.filtrer(filtre, liste_itinineraires)
             liste_sorties = []
             liste_commentaires = []
 

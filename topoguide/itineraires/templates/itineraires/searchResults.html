@@ -17,6 +17,19 @@
                             <th>Itinéraire</th>
                             <th>Durée</th>
                             <th>Difficultée</th>
+                            {% if filtre == "difficultee-croissante-moy" %}
+                                <th>Difficultée réelle</th>
+                            {% endif %}
+                            {% if filtre == "popularite-decroissante" %}
+                                <th>Popularité</th>
+                            {% endif %}
+                            {% if filtre == "duree-croissante-moy" %}
+                                <th>Durée réelle</th>
+                            {% endif %}
+                            {% if filtre == "niveau-exp-decroissant-moy" %}
+                                <th>Expérience moyenne</th>
+                            {% endif %}
+                            
                         </tr>
                     </thead>
                     
@@ -37,8 +50,28 @@
                                     {{ itineraire_double.0.duree }}
                                 </a></td>
                                 <td><a href="{% url 'itineraires:detail' itineraire_double.0.id %}">
-                                    {{ itineraire_double.0.difficulte }}
+                                    {{ itineraire_double.0.difficulte }}/5
                                 </a></td>
+                                {% if filtre == "difficultee-croissante-moy" %}
+                                    <td><a href="{% url 'itineraires:detail' itineraire_double.0.id %}">
+                                        {{ itineraire_double.2|floatformat:1 }}/5
+                                    </a></td>
+                                {% endif %}
+                                {% if filtre == "popularite-decroissante" %}
+                                <td><a href="{% url 'itineraires:detail' itineraire_double.0.id %}">
+                                    {{ itineraire_double.3 }}
+                                </a></td>
+                                {% endif %}
+                                {% if filtre == "duree-croissante-moy" %}
+                                <td><a href="{% url 'itineraires:detail' itineraire_double.0.id %}">
+                                    {{ itineraire_double.4|time:"H\h i\m" }}
+                                </a></td>
+                                {% endif %}
+                                {% if filtre == "niveau-exp-decroissant-moy" %}
+                                <td><a href="{% url 'itineraires:detail' itineraire_double.0.id %}">
+                                    {{ itineraire_double.5|floatformat:1 }}/3
+                                </a></td>
+                                {% endif %}
 
                             </tr>
                         </a>

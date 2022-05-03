@@ -22,7 +22,7 @@
               {% if forloop.first %}
               <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
               {% else %}
-              <button type="button" data-bs-target="#demo" data-bs-slide-to={{forloop.counter}}></button>
+              <button type="button" data-bs-target="#demo" data-bs-slide-to="{{forloop.counter0}}"></button>
               {% endif %}
               {% endfor %}
             </div>
@@ -32,13 +32,13 @@
               {% for image in photos %}
               {% if forloop.first %}
               <div class="carousel-item active h-100 ">
-                <img class="card-img-top mx-auto " src={% static 'itineraires/photo.jpg' %} alt="">
+                <img class="card-img-top " src={% static 'itineraires/photo.jpg' %} alt="">
                 <a style="z-index:100"
                   class="btn position-absolute start-0 {% if user != sortie.randonneur %}disabled d-none{% endif %}"
                   href={% url 'itineraires:suppression_image' image.id%} role="button">&times</a>
               </div>
               {% else %}
-              <div class="carousel-item">
+              <div class="carousel-item h-100">
                 <img src={{image.image.url}} alt="no img" class="card-img-top">
                 <a style="z-index:100"
                   class="btn btn-close btn-close-white p-3 position-absolute start-0 {% if user != image.sortie.randonneur %}disabled d-none{% endif %}"
@@ -101,7 +101,7 @@
               <div class="carousel-item">
                 <div id="sorties" class="">
 
-                  <div class="row d-none d-xl-flex">
+                  <div class="row d-none d-xl-flex pt-3 pb-3">
                     <div class="col-2 ">Randonneur</div>
                     <div class="col-2 ">Date de sortie</div>
                     <div class="col-1 ">Météo</div>
@@ -160,13 +160,16 @@
               </div>
               <div class="carousel-item active">
                 <div id="commentaires" class="list-group pt-3">
-                  <div class="collapse" id="textform">
+                  <div class="collapse p-3" id="textform">
                     <form method="post" class="form">
 
                       {% csrf_token %}
-                      {% bootstrap_form form%}
+                      {% bootstrap_form form show_label=False %}
                       {% buttons %}
-                      <button type="submit">OK</button>
+                      <div class="d-grid">
+
+                        <button class="btn btn-outline-primary btn-block " type="submit">Poster</button>
+                      </div>
                       {% endbuttons %}
                     </form>
 
@@ -175,6 +178,7 @@
                   <li class="list-group-item border-0">
                     <ul class="list-group list-group-horizontal">
                       <li class="list-group-item list-group-item-primary">{{commentaire.utilisateur}}</li>
+                      <li class="list-group-item list-group-item-primary">{{commentaire.date}}</li>
                       <li class="list-group-item">{{commentaire.texte}}</li>
                     </ul>
                   </li>

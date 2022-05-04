@@ -7,10 +7,7 @@
   <div class="row">
     <div class="col-sm-6 pt-3 d-flex">
       <div id="imgCard" class="card text-white bg-transparent w-100">
-        {% comment %} <img class="card-img-top" src={% static 'itineraires/photo.jpg' %} alt="">
-        <div class="card-img-overlay">
-          <h4 class="card-title">{{object.nom}}</h4>
-          <p class="card-text">{{object.description|default_if_none:""}}</p> {% endcomment %}
+ 
 
           <!-- Carousel -->
           <div id="demo" class="carousel slide d-flex h-100 align-items-center" data-bs-interval="false">{% comment %}
@@ -59,21 +56,6 @@
         </div>
       </div>
 
-      <div class="col-sm-6 pt-3 d-flex">
-        <div class="card w-100">
-          <div class="card-body">
-            <h1>{{ object.nom }}</h1>
-            <p>Duration: {{ object.duree }}</p>
-            <p>Difficulty: {{ object.difficulte }}</p>
-            <p>Point de départ: {{ object.pointDeDepart |default_if_none:"Non connu"}}</p>
-            <p>Altitude de départ: {{ object.altitudeDeDepart |default_if_none:"Non connue" }}</p>
-            <p>Altitude max: {{ object.altitudeMax |default_if_none:"Non connu" }}</p>
-            <p>Denivelé positif: {{ object.denivelePositif |default_if_none:"Non connu" }}</p>
-            <p>Denivelé negatif: {{object.deniveleNegatif |default_if_none:"Non connu"}}</p>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="col-sm-6 pt-3 d-flex">
       <div class="card w-100">
         <div class="card-body">
@@ -88,7 +70,8 @@
         </div>
       </div>
     </div>
-    <div id="map" style="width: 80vw;height: 40vw;left: 8vw;top: 10px;"></div>
+    
+    <div id="map" class="container-fluid" style="width: 80vw;height: 40vw;left: 8vw;top: 10px;"></div>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
     integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
     crossorigin=""/>

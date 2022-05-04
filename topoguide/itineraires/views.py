@@ -135,11 +135,12 @@ def SearchResults(request):
             liste_itinineraires = []
             liste_commentaires = []
 
-        #Si on filtre sur la popularite/difficultée/durée/niveau d'expérience on récupère les itinéraires ou le mot clé apparait et on trie ces listes
+        #Si on filtre sur la popularite/difficultée/durée/niveau d'expérience on récupère les itinéraires 
+        #ou le mot clé apparait et on trie ces listes
         if(filtre == "popularite-decroissante"
          or filtre == "difficultee-croissante-moy"
          or filtre == "duree-croissante-moy"
-         or filtre == "niveau-exp-decroissant-moy"):
+         or filtre == "niveau-exp-croissant-moy"):
             liste_itinineraires = Itineraire.get_from_key_word(key_word)
             liste_itinineraires = Itineraire.filtrer(filtre, liste_itinineraires)
             liste_itinineraires = Itineraire.organise_list(liste_itinineraires)

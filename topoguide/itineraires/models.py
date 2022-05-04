@@ -105,6 +105,7 @@ class Itineraire(models.Model):
         moyenne_duree_heure = int(somme_duree_heure//nb_sorties)
         return datetime.time(hour=moyenne_duree_heure, minute=moyenne_duree_min)
 
+
     def get_experience_moyenne(self):
         """
         Retourne l'expérience moyenne des randonneurs qui ont fait la sortie
@@ -117,6 +118,7 @@ class Itineraire(models.Model):
             somme_experience += sortie.experience*sortie.nbParticipants
         moyenne_experience = somme_experience/nb_randonneurs
         return moyenne_experience
+
 
     def organise_list(liste_itineraires):
         """
@@ -149,15 +151,32 @@ class Itineraire(models.Model):
 
 
 
-
-
     def filtrer(filtre, liste_itineraires):
+        """
+        Trie la liste des sorties en fonction du filtre:
+        -"popularite-decroissante" : les itineraires sont triés du plus populaire au moins populaire
+            (on mesure la popularité par le nombre de sorties associés à cette itineraire)
+        -"difficultee-croissante-moy" : les itinéraires sont triés du plus facile au plus difficile
+            (on mesure la difficultée en se basant sur la moyenne des difficultées sur les sorties associées)
+        -"duree-croissante-moy" : les itinéraires sont triés du plus court au plus long 
+            (on mesure cette durée en prenant la moyenne des durées sur les sorties)
+        -"niveau-exp-croissant-moy" : les itinéraires sont triés selon le niveau d'expérience moyen des randonneurs 
+            ayant partici^pé à la sortie (du plus faible niveau d'expérience au plus élevé)
 
+        ARGUMENTS:
+            -filtre : le filtre choisit
+            -liste_itineraires : la liste des itinéraires à trier -> rappel [...[itinéraires_i, endroit où le mot clé à été trouvé, ...]...]
+
+        RETURN:
+            -liste_itineraire_triee_<filtre_appliqué> = la liste (toujours la liste de liste) triée en fonction du mot clé
+        """
+        #Si la liste est vide on ne la trie pas
         if not liste_itineraires:
             return liste_itineraires
 
         max_init = len(liste_itineraires)
 
+        #Trie sur la popularité
         if (filtre == "popularite-decroissante"):
 
             liste_itineraire_triee_popularite_decroissante = []
@@ -185,6 +204,8 @@ class Itineraire(models.Model):
             
             return liste_itineraire_triee_popularite_decroissante
 
+
+        #Trie sur la difficultée
         if (filtre == "difficultee-croissante-moy"):
 
             liste_itineraire_triee_difficultee_croissante = []
@@ -213,6 +234,8 @@ class Itineraire(models.Model):
             
             return liste_itineraire_triee_difficultee_croissante
 
+
+        #Trie sur la durée moyenne
         if (filtre == "duree-croissante-moy"):
 
             liste_itineraire_triee_duree_croissante = []
@@ -240,7 +263,8 @@ class Itineraire(models.Model):
             
             return liste_itineraire_triee_duree_croissante
 
-        if (filtre == "niveau-exp-decroissant-moy"):
+        #Trie sur le niveau d'expérience moyen des participants
+        if (filtre == "niveau-exp-croissant-moy"):
 
             liste_itineraire_triee_experience_croissante = []
 
@@ -325,6 +349,7 @@ class Sortie(models.Model):
         sortie_key_word_all_list = sorties_key_word_in_randonneur_list
       
         return sortie_key_word_all_list
+    
     
     def filtrer(filtre, liste_sorties):
         """

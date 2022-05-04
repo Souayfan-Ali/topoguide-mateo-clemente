@@ -36,8 +36,8 @@
     integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
     crossorigin=""></script>
     <script type="text/javascript">
-      var x =({{object.Coordonne_x_pointDeDepart}}+{{object.Coordonne_x_Itineraire}})/2
-      var Y =({{object.Coordonne_Y_pointDeDepart}}+{{object.Coordonne_Y_Itineraire}})/2
+      var x =({{object.Coordonne_x_pointDeDepart}}+{{object.Coordonne_x_Itineraire}})/2;
+      var Y =({{object.Coordonne_Y_pointDeDepart}}+{{object.Coordonne_Y_Itineraire}})/2;
       var map = L.map('map').setView([x,Y], 12);
       var tiles = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
         maxZoom: 18,

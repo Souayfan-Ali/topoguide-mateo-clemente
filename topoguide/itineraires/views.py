@@ -168,16 +168,22 @@ def SearchResults(request):
         #Si le filtre est sur "aucun" on récupère les sorties les itinéraires et les commentaires où le mot clé apparaît
         if(filtre == "aucun"):
             liste_itinineraires = Itineraire.get_from_key_word(key_word)
-            liste_sorties = Sortie.get_from_key_word(key_word)
-            liste_commentaires = []
             liste_itinineraires = Itineraire.organise_list(liste_itinineraires)
+
+            liste_sorties = Sortie.get_from_key_word(key_word)
+
+            liste_commentaires = Commentaire.get_from_key_word(key_word)
+            liste_commentaires = Commentaire.organise_list(liste_commentaires)
+            
 
         #Si on filtre sur la date on récupère seulement les sorties ou le mot clé apparait et on trie par la date la liste des sorties
         if(filtre == "date-recente" or filtre == "date-ancienne"):
             liste_sorties = Sortie.get_from_key_word(key_word)
             liste_sorties = Sortie.filtrer(filtre, liste_sorties)
             liste_itinineraires = []
-            liste_commentaires = []
+            liste_commentaires = Commentaire.get_from_key_word(key_word)
+            liste_commentaires = Commentaire.filtrer(filtre, liste_commentaires)
+            liste_commentaires = Commentaire.organise_list(liste_commentaires)
 
         #Si on filtre sur la popularite/difficultée/durée/niveau d'expérience on récupère les itinéraires 
         #ou le mot clé apparait et on trie ces listes

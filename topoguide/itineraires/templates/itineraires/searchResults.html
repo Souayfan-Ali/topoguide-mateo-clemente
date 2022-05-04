@@ -21,9 +21,9 @@
                         <tr>
                             <th>Itinéraire</th>
                             <th>Durée</th>
-                            <th>Difficultée</th>
+                            <th>Difficulté</th>
                             {% if filtre == "difficultee-croissante-moy" %}
-                                <th>Difficultée réelle</th>
+                                <th>Difficulté réelle</th>
                             {% endif %}
                             {% if filtre == "popularite-decroissante" %}
                                 <th>Popularité</th>
@@ -117,7 +117,7 @@
                             <th>Randonneur</th>
                             <th>Itineraires correspondant</th>
                             <th>Durée</th>
-                            <th>Difficultée ressentie</th>
+                            <th>Difficulté ressentie</th>
                             <th>Date d'ajout</th>
                             <th></th>
                         </tr>
@@ -154,6 +154,26 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+
+    {% endif %}
+
+    {% if liste_commentaires %}
+        <div class="container mt-3">
+
+            <h2>Commentaires(s) trouvé(s):</h2>
+            {% for commentaire in liste_commentaires %}
+                <li class="list-group-item border-0">
+                <ul class="list-group list-group-horizontal">
+                    <li class="list-group-item list-group-item-primary">{{commentaire.0.utilisateur}}</li>
+                    <li class="list-group-item list-group-item-secondary">{{commentaire.0.date}}</li>
+                    <li class="list-group-item list-group-item-primary">
+                        <a href="{% url 'itineraires:detail' commentaire.0.itineraire_id %}">
+                        {{commentaire.0.itineraire}}</a></li>
+                    <li class="list-group-item">{{commentaire.0.texte|linebreaks|safe}}</li>
+                </ul>
+                </li>
+            {% endfor %}
         </div>
 
     {% endif %}

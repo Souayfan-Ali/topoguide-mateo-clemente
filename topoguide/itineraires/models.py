@@ -91,6 +91,8 @@ class Itineraire(models.Model):
         """
         liste_sorties = Sortie.objects.filter(itineraire__nom=self.nom)
         nb_sorties = len(liste_sorties)
+        if nb_sorties == 0:
+            return self.difficulte
         somme_difficultee = 0
         for sortie in liste_sorties:
             somme_difficultee += sortie.difficulte
@@ -104,7 +106,14 @@ class Itineraire(models.Model):
         """
         liste_sorties = Sortie.objects.filter(itineraire__nom=self.nom)
         nb_sorties = len(liste_sorties)
+
+        if nb_sorties == 0:
+            heures = self.duree.seconds/3600
+            duree_min = int((heures*60)%24)
+            duree_heure = int(heures)
+            return datetime.time(hour=duree_heure, minute=duree_min)
         somme_duree_heure = 0
+
         for sortie in liste_sorties:
             somme_duree_heure += sortie.duree.seconds/3600
         moyenne_duree_min = int(somme_duree_heure%nb_sorties)
@@ -117,6 +126,9 @@ class Itineraire(models.Model):
         Retourne l'expérience moyenne des randonneurs qui ont fait la sortie
         """
         liste_sorties = Sortie.objects.filter(itineraire__nom=self.nom)
+        nb_sorties = len(liste_sorties)
+        if nb_sorties == 0:
+            return 0
         somme_experience = 0
         nb_randonneurs = 0
         for sortie in liste_sorties:
@@ -443,5 +455,115 @@ class Commentaire(models.Model):
 
     status = models.IntegerField(choices=typeStatus)
     
+    def get_from_key_word(key_word):
+        """
+        Création d'une liste de doubles contenant le commentaire avec le mot clé correspondant
+        et l'endroit ou le mot clé a été trouvé
+        
+        ARGUMENT :
+            -key_word : str contenant le mot clé saisi dans la barre de recherche
 
+        RETURN:
+            -commentaire_key_word_all_list : une liste de doubles contenant (commentaire, endroit ou le mot clé a été trouvé)
+        """
+        #Recherche du mot clé dans le nom des utilisateur dans les commentaires
+        commentaire_key_word_in_utilisateur = Commentaire.objects.filter(utilisateur__username__icontains=key_word)
+        commentaire_key_word_in_utilisateur_list = [[commentaire, "utilisateur", ""] for commentaire in commentaire_key_word_in_utilisateur]
+
+        #Recherche du mot clé dans le corps du commentaire dans tous les commentaires
+        commentaire_key_word_in_corpus = Commentaire.objects.filter(texte__icontains=key_word)
+        commentaire_key_word_in_corpus_list = [[commentaire, "texte", ""] for commentaire in commentaire_key_word_in_corpus]
+
+        #Assemblage des sorties avec le mot clé dans une seule liste
+        commentaire_key_word_all_list = commentaire_key_word_in_utilisateur_list+commentaire_key_word_in_corpus_list
+        
+      
+        return commentaire_key_word_all_list
+
+    def organise_list(liste_commentaires):
+        """
+        Réorganise la liste des commentaires pour éviter les doublons
+        """
+        liste_commentaires_new = []
+
+        if not liste_commentaires:
+            return liste_commentaires_new
+
+       
+        while liste_commentaires:
+            
+            commentaire_double = liste_commentaires.pop(0)
+            liste_commentaires_new.append(commentaire_double)
+            taille = len(liste_commentaires)
+
+            i=0
+            while i<taille:
+                commentaire_double_actuel = liste_commentaires[i]
+                if(commentaire_double_actuel[0].id == commentaire_double[0].id):
+                    endroit = commentaire_double_actuel[1]
+                    liste_commentaires.pop(i)
+                    taille -=1
+                    commentaire_double[2] = endroit
+                else:
+                    i+=1
+        
+        return liste_commentaires_new
+
+    def filtrer(filtre, liste_commentaires):
+        """
+        Trie la liste des commentaires en fonction du filtre:
+        -date-recente : les commentaires du plus récent au plus ancien
+        -date-ancienne : les commentaires du plus ancient au plus récent
+
+        ARGUMENTS:
+            -filtre : le filtre choisit
+            -liste_commentaires : la liste des commentaire à trier -> rappel [...[commentaire_i, endroit où le mot clé à été trouvé,...]...]
+
+        RETURN:
+            -liste_commentaire_triee = la liste (toujours la liste de double) triée en fonction du mot clé
+        """
+
+        #Si la liste des sortie est vide on ne l'a trie pas
+        if not liste_commentaires:
+            return liste_commentaires
+
+        
+        #Déclaration de la nouvelle liste triée
+        liste_commentaires_triee_dates_croissantes = []
+        max_init = len(liste_commentaires)
+
+
+        #On parcours tous les éléments de la liste des commentaires
+        #Au rang k on a k éléments dans la liste triée et k-taille initiale dans la liste initiale
+        for k in range(0,max_init):
+
+            commentaire_date_min = liste_commentaires[0][0]
+            date_min = commentaire_date_min.date
+            indice_commentaire_min = 0
+
+            #On trouve le plus petit élément de la liste non triée
+            for i in range(1, len(liste_commentaires)):
+                commentaire_a_comparer = liste_commentaires[i][0]
+                date_a_comparer = commentaire_a_comparer.date
+
+                if(date_min.year > date_a_comparer.year):
+                    commentaire_date_min = liste_commentaires[i][0]
+                    date_min = commentaire_date_min.date
+                    indice_commentaire_min = i
+
+                if (date_min.year == date_a_comparer.year and date_min > date_a_comparer):
+                    commentaire_date_min = liste_commentaires[i][0]
+                    date_min = commentaire_date_min.date
+                    indice_commentaire_min = i
+
+            liste_commentaires_triee_dates_croissantes.append(liste_commentaires.pop(indice_commentaire_min))
+            
+        
+        #Si le filtre est de la date la plus ancienne à la plus récente
+        if filtre == "date-ancienne":
+            return liste_commentaires_triee_dates_croissantes
+
+        #Si le filtre est de la date la plus récente à la plus ancienne
+        liste_commentaires_triee_dates_croissantes.reverse()
+        return liste_commentaires_triee_dates_croissantes
 

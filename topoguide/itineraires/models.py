@@ -41,25 +41,27 @@ class Itineraire(models.Model):
             -key_word : str contenant le mot clé saisi dans la barre de recherche
 
         RETURN:
-            -itineraires_key_word_all_list : une liste de double contenant (itinéraire, endroit ou le mot clé a été trouvé, difficultee moyenne)
+            -itineraires_key_word_all_list : une liste de double contenant 
+            (0:tinéraire, 1:endroit ou le mot clé a été trouvé, 2:difficultee moyenne
+            3:nombre de sorties associées, 4:durée moyenne sur les sorties, 5:experience moyenne, 6:afficher le titre(True) ou non(False))
         """
 
         #Recherche du mot clé dans les titres des itinéraires
         itineraires_key_word_in_title = Itineraire.objects.filter(nom__icontains=key_word)
-        itineraires_key_word_in_title_list = [(itineraire, "title", itineraire.get_difficultee_moyenne(), itineraire.get_nb_sortie(), 
-        itineraire.get_duree_moyenne(), itineraire.get_experience_moyenne()) 
+        itineraires_key_word_in_title_list = [[itineraire, "title", itineraire.get_difficultee_moyenne(), itineraire.get_nb_sortie(), 
+        itineraire.get_duree_moyenne(), itineraire.get_experience_moyenne(), True]
         for itineraire in itineraires_key_word_in_title]
 
         #Recherche du mot clé dans la description des itinéraires
         itineraires_key_word_in_description = Itineraire.objects.filter(description__icontains=key_word)
-        itineraires_key_word_in_description_list = [(itineraire, "description", itineraire.get_difficultee_moyenne(), itineraire.get_nb_sortie(), 
-        itineraire.get_duree_moyenne(), itineraire.get_experience_moyenne() ) 
+        itineraires_key_word_in_description_list = [[itineraire, "description", itineraire.get_difficultee_moyenne(), itineraire.get_nb_sortie(), 
+        itineraire.get_duree_moyenne(), itineraire.get_experience_moyenne(), True ] 
         for itineraire in itineraires_key_word_in_description]        
 
         #recherche du mot clé dans le point de départ des itinéraires
         itineraires_key_word_in_pointDeDepart = Itineraire.objects.filter(pointDeDepart__icontains=key_word)
-        itineraires_key_word_in_pointDeDepart_list = [(itineraire, "pointDeDepart",itineraire.get_difficultee_moyenne(), itineraire.get_nb_sortie(),
-        itineraire.get_duree_moyenne(), itineraire.get_experience_moyenne()) 
+        itineraires_key_word_in_pointDeDepart_list = [[itineraire, "pointDeDepart",itineraire.get_difficultee_moyenne(), itineraire.get_nb_sortie(),
+        itineraire.get_duree_moyenne(), itineraire.get_experience_moyenne(), True] 
         for itineraire in itineraires_key_word_in_pointDeDepart]        
 
         #Assemblage des itinéraires avec le mot clé dans une seule liste
@@ -115,6 +117,37 @@ class Itineraire(models.Model):
             somme_experience += sortie.experience*sortie.nbParticipants
         moyenne_experience = somme_experience/nb_randonneurs
         return moyenne_experience
+
+    def organise_list(liste_itineraires):
+        """
+        Réorganise la liste des itinénaires pour éviter les doublons
+        """
+        liste_itineraires_new = []
+
+        if not liste_itineraires:
+            return liste_itineraires_new
+
+       
+        while liste_itineraires:
+            
+            itineraire_double = liste_itineraires.pop(0)
+            liste_itineraires_new.append(itineraire_double)
+            taille = len(liste_itineraires)
+
+            i=0
+            while i<taille:
+                itineraire_double_actuel = liste_itineraires[i]
+                if(itineraire_double_actuel[0].nom == itineraire_double[0].nom):
+                    liste_itineraires.pop(i)
+                    taille -=1
+                    itineraire_double_actuel[6] = False
+                    liste_itineraires_new.append(itineraire_double_actuel)
+                else:
+                    i+=1
+        
+        return liste_itineraires_new
+
+
 
 
 

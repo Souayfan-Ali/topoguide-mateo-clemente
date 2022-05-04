@@ -126,6 +126,7 @@ def SearchResults(request):
             liste_itinineraires = Itineraire.get_from_key_word(key_word)
             liste_sorties = Sortie.get_from_key_word(key_word)
             liste_commentaires = []
+            liste_itinineraires = Itineraire.organise_list(liste_itinineraires)
 
         #Si on filtre sur la date on récupère seulement les sorties ou le mot clé apparait et on trie par la date la liste des sorties
         if(filtre == "date-recente" or filtre == "date-ancienne"):
@@ -141,6 +142,7 @@ def SearchResults(request):
          or filtre == "niveau-exp-decroissant-moy"):
             liste_itinineraires = Itineraire.get_from_key_word(key_word)
             liste_itinineraires = Itineraire.filtrer(filtre, liste_itinineraires)
+            liste_itinineraires = Itineraire.organise_list(liste_itinineraires)
             liste_sorties = []
             liste_commentaires = []
 

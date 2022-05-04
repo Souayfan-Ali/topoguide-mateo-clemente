@@ -11,6 +11,39 @@
       <a class="navbar-brand" href="#">TOPOGUIDE</a>
       <a class="nav-link active" aria-current="page" href={% url 'itineraires:liste_itineraires' %}>Itinéraires</a>
     </div>
+
+    {# Formulaire de saisi du trie et du mot clé de recherche #}
+    <div class="navbar-nav d-flex flex-row me-auto">
+      <form method="POST" action={% url 'itineraires:searchResults' %}>
+        {% csrf_token %}
+
+        {# Filtre de trie à appliquer à la recherche #}
+        <!--(si trie mais aucune recherche on affiche tous les résulats)-->
+        <label for="filtre">Filtrer</label>
+        <select name="filtre" id="filtre">
+          <option value="aucun">Aucun</option>
+          <optgroup label="Sorties">
+            <option value="date-recente">Date (Récente)</option>
+            <option value="date-ancienne">Date (Ancienne)</option>
+          </optgroup>
+          <optgroup label="Itineraires">
+            <option value="popularite-decroissante">Popularité</option>
+            <option value="difficultee-croissante-moy">Difficultee</option>
+            <option value="duree-croissante-moy">Durée</option>
+            <option value="niveau-exp-croissant-moy">Niveau d'expérience</option>
+          </optgroup>
+        </select>
+
+        {# Filtre de recherche à l'aide d'un mot clé #}
+        <label for="search"></label>
+        <input type="search" id="search" name="search" placeholder="Search...">
+        
+        {# Bouton de la validation du formulaire #}
+        <input type="submit" value="OK">
+
+      </form>
+    </div>
+    
     {% if user.is_authenticated %}
     <a name="" id="loginButton" class="btn btn-warning float-right mt-auto" href={% url 'logout' %} role="button" >Logout</a>
     {% else %}

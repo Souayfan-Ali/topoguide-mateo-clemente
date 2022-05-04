@@ -1,11 +1,14 @@
+import sys
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views import generic
 from datetime import datetime
 from itineraires.models import Itineraire, Sortie, Image, Commentaire
-from .forms import CommentaireForm, ImageForm, SortieForm
-from django.views.generic.edit import FormMixin
+from .forms import CommentaireForm, ImageForm, SortieForm, StatusForm
+from django.utils.decorators import method_decorator
+from django.views.generic.edit import FormView
 """Toutes les vues affichent une barre de navigation à part le login"""
 
 
@@ -25,11 +28,11 @@ class DetailView(generic.UpdateView):
 
     """
     model = Itineraire
-    form_class = CommentaireForm
     template_name = 'itineraires/itineraire_detail.html'
-    fileds = '__all__'
+    fileds = ['texte']
+    form_class = CommentaireForm
 
-
+    #on doit définir l'url de redirection en cas de form validé
     def get_success_url(self) -> str:
         return '{}#itineraires'.format(reverse('itineraires:detail', kwargs={'pk': self.object.id}))
 
@@ -37,6 +40,7 @@ class DetailView(generic.UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['user']=self.request.user
         context["liste_sorties"] = Sortie.objects.filter(
             itineraire__id=self.object.id
         )
@@ -48,31 +52,41 @@ class DetailView(generic.UpdateView):
         )
         context['form'] = CommentaireForm(initial={
                                           'utilisateur': self.request.user, 'itineraire': self.object, 'date': datetime.now(), 'status': 1})
+        context['status_form'] = StatusForm()
         return context
 
-        
+
+
+
+
+    @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
+
         self.object = self.get_object()
-        form = self.get_form()
-        if form.is_valid():
-            return self.form_valid(form)
+        com_id=None
+        for com in Commentaire.objects.filter(itineraire__id=self.object.id):
+            if "status-form-"+str(com.id) in request.POST:
+                com_id = com.id
+                break
+
+        if 'status' in request.POST:
+            form = StatusForm(instance=Commentaire.objects.get(pk=com_id))
+            print(form)
         else:
-            return self.form_invalid(form)
-    
-    def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
-        Commentaire.objects.create(texte=form.cleaned_data['texte'],utilisateur=self.request.user, itineraire=self.object, date=datetime.now(), status=1)
-        return super().form_valid(form)
+            form = self.get_form()
 
+        if 'status' in request.POST:
+            com.status = request.POST['status']
+            com.save()
+            return HttpResponseRedirect(self.get_success_url())
 
-class SortieView(generic.DetailView):
-    """
-    Vue représentant les sorties.
-    Accessible par url direct mais peu utile : on retrouve toutes les données nécéssaires dans DetailView.
-    """
-    model = Sortie
-    template_name = 'itineraires/sorties.html'
+        if form.is_valid():
+            Commentaire.objects.create(texte=form.cleaned_data['texte'],utilisateur=self.request.user, itineraire=self.object, date=datetime.now(), status=1)
+            return self.form_valid(form)
+        
+        return self.form_invalid(form)
+   
+
 
 
 @login_required
@@ -209,12 +223,6 @@ def SuppressionImage(request, image_id):
     image = Image.objects.get(pk=image_id)
     if request.user != image.sortie.randonneur:
         return redirect('itineraires:detail', pk=image.sortie.itineraire.id)
-    # on garde l'id avant de supprimer pour pouvoir rediriger vers une page cohérente
-    i_id = image.id
     image.delete()
 
     return redirect('itineraires:detail', pk=image.sortie.itineraire.id)
-
-
-def CommentaireView(request, sortie_id):
-    commentaire_list = Commentaire.objects.filter(sortie__id=sortie_id)

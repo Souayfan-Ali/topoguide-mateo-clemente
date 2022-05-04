@@ -43,3 +43,9 @@ class CommentaireForm(forms.ModelForm):
             'texte': forms.Textarea(attrs={'placeholder':'Comment a été votre sortie?','style':'height: 96px'})
         }
 
+class StatusForm(forms.ModelForm):
+
+    class Meta:
+        model = Commentaire
+        fields = ['status']
+        widgets = {}

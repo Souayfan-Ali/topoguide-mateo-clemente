@@ -1,6 +1,7 @@
 from ast import keyword
 import datetime
 from re import I
+from tkinter import CASCADE
 from django.utils import timezone
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -20,6 +21,7 @@ class Itineraire(models.Model):
     nom = models.CharField(max_length=200)
     Coordonne_x_Itineraire=models.DecimalField(default=0,null=True,max_digits=10, decimal_places=7)
     Coordonne_Y_Itineraire=models.DecimalField(default=0,null=True,max_digits=10, decimal_places=7)
+
     duree = models.DurationField()
     #les validators permettent de borner directement les valeurs
     difficulte = models.IntegerField(
@@ -297,7 +299,6 @@ class Itineraire(models.Model):
 
 
 
-
 class Sortie(models.Model):
     #les validators permettent de borner directement les valeurs
     randonneur = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -412,4 +413,35 @@ class Sortie(models.Model):
         #Si le filtre est de la date la plus récente à la plus ancienne
         liste_sorties_triee_dates_croissantes.reverse()
         return liste_sorties_triee_dates_croissantes
+
+    def __str__(self):
+        return self.itineraire.nom + " - " + self.randonneur.username
+    
+
+def itineraire_img_name(instance, filename):
+    return ('/'.join([instance.sortie.itineraire.nom, filename])).replace(' ','_')
+
+
+class Image(models.Model):
+    sortie = models.ForeignKey(Sortie,on_delete=models.CASCADE)
+    image = models.ImageField(upload_to=itineraire_img_name,null=False)
+
+class Commentaire(models.Model):
+    utilisateur = models.ForeignKey(User,on_delete=models.CASCADE)
+    texte = models.TextField()
+    date = models.DateTimeField()
+    itineraire = models.ForeignKey(Itineraire,on_delete=models.CASCADE)
+
+    PB = 1
+    HID = 2
+    PV = 3
+    typeStatus = [
+      (PB,'Public'),
+      (HID,'Cache'),
+      (PV,'Prive')
+    ]
+
+    status = models.IntegerField(choices=typeStatus)
+    
+
 

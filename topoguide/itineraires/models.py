@@ -19,16 +19,16 @@ Seulement deux modeles liés :
 class Itineraire(models.Model):
     #certaines informations sont facultatives et seront affichées comme non connues dans le template associé
     nom = models.CharField(max_length=200)
-    Coordonne_x_Itineraire=models.DecimalField(default=0,null=True,max_digits=10, decimal_places=7)
-    Coordonne_Y_Itineraire=models.DecimalField(default=0,null=True,max_digits=10, decimal_places=7)
+    latitude_Itineraire=models.DecimalField(default=0,null=True,max_digits=20, decimal_places=16)
+    longitude_Itineraire=models.DecimalField(default=0,null=True,max_digits=20, decimal_places=16)
 
     duree = models.DurationField()
     #les validators permettent de borner directement les valeurs
     difficulte = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(5)])
     pointDeDepart = models.CharField(max_length=200,null=True)
-    Coordonne_x_pointDeDepart=models.DecimalField(default=0,null=True,max_digits=10, decimal_places=7)
-    Coordonne_Y_pointDeDepart=models.DecimalField(default=0,null=True,max_digits=10, decimal_places=7)
+    latitude_pointDeDepart=models.DecimalField(default=0,null=True,max_digits=20, decimal_places=16)
+    longitude_pointDeDepart=models.DecimalField(default=0,null=True,max_digits=20, decimal_places=16)
     altitudeDepart = models.IntegerField(default=0,null=True)
     altitudeMax = models.IntegerField(default=0,null=True)
     denivelePositif = models.IntegerField(default=0,null=True)

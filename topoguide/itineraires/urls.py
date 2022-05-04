@@ -1,6 +1,6 @@
 from django.urls import path
+from itineraires import views
 
-from . import views
 """
 Urls pour l'application itinéraires
 """
@@ -13,5 +13,7 @@ urlpatterns = [
     path('sortie/modification/<int:sortie_id>', views.ModificationSortie, name='modification_sortie'),
     path('sortie/suppression/<int:sortie_id>', views.SuppressionSortie, name='suppression_sortie'),
     path('searchResults/', views.SearchResults, name='searchResults'),
+    path('image/suppression/<int:image_id>', views.SuppressionImage, name='suppression_image'),
 
 ]
+

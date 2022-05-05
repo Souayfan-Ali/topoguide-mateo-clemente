@@ -2,11 +2,6 @@
 {# Légèrement compliqué, mais nécéssaire pour pouvoir afficher toutes les données sur mobile #}
 
 {% extends 'itineraires/navBar.html' %} {% block content %} {% load static %}{% load bootstrap5 %}
-<script>
-  function myFunction() {
-    alert("couille")
-  }
-  </script>
   
 <div class="container-fluid h-100">
   <div class="row pb-3">
@@ -14,7 +9,7 @@
       <div id="imgCard" class="card text-white bg-transparent border w-100">
 
 
-        <!-- Carousel -->
+        <!-- Carousel des photos des sorties sur cet itinéraire -->
         <div id="demo" class="carousel slide d-flex h-100 align-items-center carousel-fade" data-bs-interval="false">
 
           <!-- Indicators/dots -->
@@ -28,7 +23,7 @@
             {% endfor %}
           </div>
 
-          <!-- The slideshow/carousel -->
+          <!-- The slideshow -->
           <div class="carousel-inner bg-transparent">
             {% if photos|length < 1 %}
             <div class="carousel-item active">
@@ -66,9 +61,12 @@
       </div>
     </div>
 
+    <!-- Informations sur l'itinéraire / carte -->
     <div class="col-sm-6 pt-3 d-flex">
       <div class="card w-100">
         <div class="card-body">
+
+          <!-- Boutons pour switch infos/carte -->
           <div class="d-flex pb-3">
             <div class="d-flex btn-group">
               <button class="btn btn-outline-secondary" data-bs-target="#map-desc" data-bs-slide="prev">Informations</button>
@@ -83,7 +81,7 @@
           
             <div class="carousel-inner">
 
-              
+              <!-- Infos sur l'itineraire-->
               <div class="carousel-item active">
                 <h1>{{ object.nom }}</h1>
                 <p>Duration: {{ object.duree }}</p>
@@ -95,6 +93,7 @@
                 <p>Denivelé negatif: {{object.deniveleNegatif |default_if_none:"Non connu"}}</p>
               </div>
               
+              <!-- Carte -->
               <div class="carousel-item ">
                 
                 <div id="map" class="d-block embed-responsive-item mb-3" style="width: 100%; height: 50vh"></div>
@@ -131,11 +130,12 @@
 
   
 
-
+  <!-- Sorties/Commentaires -->
   <div class="container-fluid !direction !spacing pt-3 pb-3 pe-0 ps-0">
     <div class="card">
       <div class="card-body">
 
+        <!-- Boutons pour switch sorties / commentaires-->
         <div class="d-flex">
           <div class="d-flex btn-group">
             <button class="btn btn-outline-secondary" data-bs-target="#demo2" data-bs-slide="prev">Sorties</button>
@@ -147,16 +147,14 @@
               data-bs-target="#textform">+</button>
             <button id="combutton" class=" btn btn-outline-info  " type="button" data-bs-target="#demo2"
               data-bs-slide="next">Commentaires</button>
-
           </div>
-
         </div>
 
+        <!-- Sorties / Commentaires -->
         <div id="demo2" class="carousel slide" data-bs-wrap="false" data-bs-ride="carousel" data-bs-interval="false">
 
-
           <div class="carousel-inner">
-            <div class="carousel-item">
+            <div class="carousel-item active">
               <div id="sorties" class="">
 
                 <div class="row d-none d-xl-flex pt-3 pb-3">
@@ -216,36 +214,42 @@
                 {% endfor %}
               </div>
             </div>
-            <div class="carousel-item active">
+
+            <!-- Affichage des commentaires -->
+            <div class="carousel-item">
               <div id="commentaires" class="list-group pt-3">
+                
+                <!-- Ajout d'un nouveau commentaire -->
                 <div class="collapse p-3" id="textform">
                   <form method="post" class="form">
-
                     {% csrf_token %}
                     {% bootstrap_form form show_label=False %}
                     {% buttons %}
                     <div class="d-grid">
-
                       <button class="btn btn-outline-primary btn-block " type="submit">Poster</button>
                     </div>
                     {% endbuttons %}
                   </form>
-
                 </div>
+
+                <!-- Visualisation des commentaires -->
                 {% for commentaire in commentaires %}
                 {% if user.is_staff or commentaire.status == 1 or user == commentaire.utilisateur and commentaire.status == 3 %}
                 <li class="list-group-item border-0 ">
                   <ul class="list-group list-group-horizontal">
                     <li class="list-group-item list-group-item-primary" data-bs-toggle="collapse" data-bs-target="#status{{commentaire.id}}">
                       {{commentaire.utilisateur}}
-                      
                     </li>
+
+                    <!-- form de changement de status-->
                     <li id="status{{commentaire.id}}" class="collapse collapse-horizontal list-group-item list-group-item-warning">
                       <form action method="post">
-                        
                         {% csrf_token %}
-                        {% bootstrap_form status_form show_label=False %}
+                        {% bootstrap_label commentaire.get_status_display %}
+                        {% bootstrap_form status_form show_label=False%}
                         {% buttons %}
+
+                        <!-- le nom du bouton name="status-form-{{commentaire.id}}" permet au form de savoir quel commentaire il affecte -->
                         <div class="d-grid">
                           <button name="status-form-{{commentaire.id}}" class="btn btn-outline-primary btn-block " type="submit">Modifier</button>
                         </div>
@@ -261,14 +265,9 @@
               </div>
             </div>
           </div>
-
-
         </div>
-
       </div>
     </div>
-
-
   </div>
   {% endblock content %}
 </div>

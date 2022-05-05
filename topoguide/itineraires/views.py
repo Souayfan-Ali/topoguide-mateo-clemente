@@ -29,65 +29,92 @@ class DetailView(generic.UpdateView):
     """
     model = Itineraire
     template_name = 'itineraires/itineraire_detail.html'
+
+    #nécéssaire pour pouvoir faire un formmixin dans une vue générique
     fileds = ['texte']
     form_class = CommentaireForm
 
     #on doit définir l'url de redirection en cas de form validé
     def get_success_url(self) -> str:
+        #en cas de succes du form, on est redirigés vers l'itinéraire correspondant
         return '{}#itineraires'.format(reverse('itineraires:detail', kwargs={'pk': self.object.id}))
 
     # redéfinir get_context_data permet d'accéder aux sorties voulues
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        #utilisateur
         context['user']=self.request.user
+
+        #sorties associées à l'itinéraire
         context["liste_sorties"] = Sortie.objects.filter(
             itineraire__id=self.object.id
         )
+
+        #commentaires associées à l'itinéraire
         context["commentaires"] = Commentaire.objects.filter(
             itineraire__id=self.object.id
         )
+
+        #toutes les images des sorties sur cet itinéraire
         context['photos'] = Image.objects.filter(
             sortie__itineraire__id=self.object.id
         )
+
+        #form de nouveau commentaire
         context['form'] = CommentaireForm(initial={
                                           'utilisateur': self.request.user, 'itineraire': self.object, 'date': datetime.now(), 'status': 1})
+        #form de changement de status
         context['status_form'] = StatusForm()
         return context
 
 
 
 
-
+    #seuls les utilisateurs connectés peuvent POSTer des données
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
 
         self.object = self.get_object()
-        com_id=None
-        for com in Commentaire.objects.filter(itineraire__id=self.object.id):
-            if "status-form-"+str(com.id) in request.POST:
-                com_id = com.id
-                break
 
+        #si le form POSTé est un changement de status
         if 'status' in request.POST:
+
+            #recherche du commentaire sur lequel on veut effectuer le changement
+            for com in Commentaire.objects.filter(itineraire__id=self.object.id):
+                if "status-form-"+str(com.id) in request.POST:
+                    com_id = com.id
+                    break
+
+            #récupération de l'instance associée
             form = StatusForm(request.POST,instance=Commentaire.objects.get(pk=com_id))
-            print(form)
+            
+            #validation
+            if form.is_valid():
+                com.status = request.POST['status']
+                com.save()
+                return HttpResponseRedirect(self.get_success_url())
+        
+        #si le form POSTé est un nouveau commentaire
         else:
+            #récupération le form d commentaire avec la méthode django associée à form_class
             form = self.get_form()
 
-        print(form.data)
-        if 'status' in request.POST and form.is_valid():
-            com.status = request.POST['status']
-            com.save()
-            return HttpResponseRedirect(self.get_success_url())
-
-        if form.is_valid():
-            Commentaire.objects.create(texte=form.cleaned_data['texte'],utilisateur=self.request.user, itineraire=self.object, date=datetime.now(), status=1)
-            return self.form_valid(form)
+            #validation
+            if form.is_valid():
+                Commentaire.objects.create(texte=form.cleaned_data['texte'],utilisateur=self.request.user, itineraire=self.object, date=datetime.now(), status=1)
+                return self.form_valid(form)
         
         return self.form_invalid(form)
    
 
+class SortieView(generic.DetailView):
+    """
+    Vue représentant les sorties.
+    Accessible par url direct mais peu utile : on retrouve toutes les données nécéssaires dans DetailView.
+    """
+    model = Sortie
+    template_name = 'itineraires/sorties.html'
 
 
 @login_required

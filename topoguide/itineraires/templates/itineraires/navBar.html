@@ -14,25 +14,30 @@
 
     {# Formulaire de saisi du trie et du mot clé de recherche #}
     <div class="navbar-nav d-flex flex-row me-auto">
-      <form method="POST" action={% url 'itineraires:searchResults' %}>
+      <form method="POST" action={% url 'itineraires:searchResults' "all" %}>
         {% csrf_token %}
-
+        
         {# Filtre de trie à appliquer à la recherche #}
-        <!--(si trie mais aucune recherche on affiche tous les résulats)-->
-        <label for="filtre">Filtrer</label>
+        <!--(si trie mais aucune recherche on affiche tous les résulats)
+        <label for="filtre" style="color:white;">Filtre</label>
         <select name="filtre" id="filtre">
           <option value="aucun">Aucun</option>
-          <optgroup label="Sorties/Commentaires">
-            <option value="date-recente">Date (Récente)</option>
-            <option value="date-ancienne">Date (Ancienne)</option>
+          <option value="itineraires">Itineraires</option>
+          <option value="sorties">Sorties</option>
+          <option value="commentaires">Aucun</option>
+          <optgroup label="Sorties">
+            <option value="randonneur">Randonneur</option>
           </optgroup>
           <optgroup label="Itineraires">
-            <option value="popularite-decroissante">Popularité</option>
-            <option value="difficultee-croissante-moy">Difficultee</option>
-            <option value="duree-croissante-moy">Durée</option>
-            <option value="niveau-exp-croissant-moy">Niveau d'expérience</option>
+            <option value="nom">Nom</option>
+            <option value="description">Description</option>
+            <option value="duree-croissante-moy">Point de départ</option>
           </optgroup>
-        </select>
+          <optgroup label="Commentaires">
+            <option value="randonneur">Randonneur</option>
+            <option value="corps-textuel">Corps textuel</option>
+          </optgroup>
+        </select>-->
 
         {# Filtre de recherche à l'aide d'un mot clé #}
         <label for="search"></label>

@@ -1,3 +1,4 @@
+from re import L
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -6,6 +7,7 @@ from datetime import datetime
 from itineraires.models import Itineraire, Sortie, Image, Commentaire
 from .forms import CommentaireForm, ImageForm, SortieForm
 from django.views.generic.edit import FormMixin
+from .lastResearch import LastResearch
 """Toutes les vues affichent une barre de navigation à part le login"""
 
 
@@ -143,7 +145,7 @@ def SuppressionSortie(request, sortie_id):
     return redirect('itineraires:detail', pk=s_id)
 
 
-def SearchResults(request):
+def SearchResults(request, filtre):
     """
     Vue qui affiche les résultats de la recherche
     
@@ -151,22 +153,92 @@ def SearchResults(request):
     #Initialisation de la variable de contexte
     context = {}
 
-    #Si une recherche a été effectuée on renvoie les résulats sur la page searchResults.html
-    if request.method == "POST":
 
-        #On récupères les données du formulaire de recherche
-        key_word = request.POST.get("search")
-        filtre = request.POST.get("filtre")
-        context["key_word"]=key_word
-        context["filtre"]=filtre
+    if filtre == "filtre-sortie":
+        key_word = LastResearch.last_key_word
+        trie = "aucun"
+        if not LastResearch.last_filtre_models[0]:
+            LastResearch.last_filtre_models[0] = True
+        else :
+            LastResearch.last_filtre_models[0] = False
+        filtre_models = LastResearch.last_filtre_models
+        context["filtre_models"] = filtre_models
+        print(filtre_models)
+        LastResearch.last_filtre = filtre
+    if filtre == "filtre-itineraires":
+        key_word = LastResearch.last_key_word
+        trie = "aucun"
+        if not LastResearch.last_filtre_models[1]:
+            LastResearch.last_filtre_models[1] = True
+        else :
+            LastResearch.last_filtre_models[1] = False
+        filtre_models = LastResearch.last_filtre_models
+        context["filtre_models"] = filtre_models
+        print(filtre_models)
+        LastResearch.last_filtre = filtre
+    if filtre == "filtre-commentaires":
+        key_word = LastResearch.last_key_word
+        trie = "aucun"
+        if not LastResearch.last_filtre_models[2]:
+            LastResearch.last_filtre_models[2] = True
+        else :
+            LastResearch.last_filtre_models[2] = False
+        filtre_models = LastResearch.last_filtre_models
+        context["filtre_models"] = filtre_models
+        print(filtre_models)
+        LastResearch.last_filtre = filtre
+
+    #Mise à jour des context
+    context["key_word"] = LastResearch.last_key_word
+    context["liste_itinineraires"]=LastResearch.last_liste_itinineraires
+    context["liste_sorties"]=LastResearch.last_liste_sorties
+    context["liste_commentaires"]=LastResearch.last_liste_commentaires
+    context["last_filtre_models"]=LastResearch.last_filtre_models
+
+
+
+   
+
+    #Si une recherche a été effectuée on renvoie les résulats sur la page searchResults.html
+    if request.method == "POST": 
+
+
+        if filtre == "all":
+            #On récupères les données du formulaire de recherche
+            LastResearch.last_filtre_models = [True, True, True]
+            filtre_models = LastResearch.last_filtre_models
+            print("filtre_models=",filtre_models)
+            key_word = request.POST.get("search")
+            trie ="aucun"
+            context["key_word"]=key_word
+            context["trie"]=trie
+            context["filtre_models"] = filtre_models
+        if filtre == "trie":
+            filtre_models = LastResearch.last_filtre_models
+            key_word = LastResearch.last_key_word
+            trie = request.POST.get("trie")
+            context["key_word"]=key_word
+            context["trie"]=trie
+            context["filtre_models"] = filtre_models
+        if filtre == "filtre":
+            key_word = request.POST.get("search-filtre")
+            print("key_word filtre :", key_word)
+            trie = "aucun"
+            filtre_models = LastResearch.last_filtre_models
+            context["filtre_models"] = filtre_models
+            print(filtre_models)
+            context["filtre_models"] = filtre_models
+
+        
+
 
         #Si l'utilisateur n'a pas entrée de mot (directement cliqué sur ok) on ne prend pas la peine de chercher
         #un résulat correspondant
         if key_word == "" or key_word == " ":
             render(request, "itineraires/searchResults.html", context)
 
-        #Si le filtre est sur "aucun" on récupère les sorties les itinéraires et les commentaires où le mot clé apparaît
-        if(filtre == "aucun"):
+        #Si le trie est sur "aucun" on récupère les sorties les itinéraires et les commentaires où le mot clé apparaît
+        if(trie == "aucun"):
             liste_itinineraires = Itineraire.get_from_key_word(key_word)
             liste_itinineraires = Itineraire.organise_list(liste_itinineraires)
 
@@ -176,23 +248,23 @@ def SearchResults(request):
             liste_commentaires = Commentaire.organise_list(liste_commentaires)
             
 
-        #Si on filtre sur la date on récupère seulement les sorties ou le mot clé apparait et on trie par la date la liste des sorties
-        if(filtre == "date-recente" or filtre == "date-ancienne"):
+        #Si on trie sur la date on récupère seulement les sorties ou le mot clé apparait et on trie par la date la liste des sorties
+        if(trie == "date-recente" or trie == "date-ancienne"):
             liste_sorties = Sortie.get_from_key_word(key_word)
-            liste_sorties = Sortie.filtrer(filtre, liste_sorties)
+            liste_sorties = Sortie.trier(trie, liste_sorties)
             liste_itinineraires = []
             liste_commentaires = Commentaire.get_from_key_word(key_word)
-            liste_commentaires = Commentaire.filtrer(filtre, liste_commentaires)
+            liste_commentaires = Commentaire.trier(trie, liste_commentaires)
             liste_commentaires = Commentaire.organise_list(liste_commentaires)
 
-        #Si on filtre sur la popularite/difficultée/durée/niveau d'expérience on récupère les itinéraires 
+        #Si on trie sur la popularite/difficultée/durée/niveau d'expérience on récupère les itinéraires 
         #ou le mot clé apparait et on trie ces listes
-        if(filtre == "popularite-decroissante"
-         or filtre == "difficultee-croissante-moy"
-         or filtre == "duree-croissante-moy"
-         or filtre == "niveau-exp-croissant-moy"):
+        if(trie == "popularite-decroissante"
+         or trie == "difficultee-croissante-moy"
+         or trie == "duree-croissante-moy"
+         or trie == "niveau-exp-croissant-moy"):
             liste_itinineraires = Itineraire.get_from_key_word(key_word)
-            liste_itinineraires = Itineraire.filtrer(filtre, liste_itinineraires)
+            liste_itinineraires = Itineraire.trier(trie, liste_itinineraires)
             liste_itinineraires = Itineraire.organise_list(liste_itinineraires)
             liste_sorties = []
             liste_commentaires = []
@@ -202,9 +274,21 @@ def SearchResults(request):
         context["liste_itinineraires"]=liste_itinineraires
         context["liste_sorties"]=liste_sorties
         context["liste_commentaires"]=liste_commentaires
+        context["last_filtre_models"]=LastResearch.last_filtre_models
+        context["key_word"]=key_word
+
+        #Mise à jour de la dernière recherche
+        LastResearch.last_liste_itinineraires = liste_itinineraires
+        LastResearch.last_liste_sorties = liste_sorties
+        LastResearch.last_liste_commentaires = liste_commentaires
+        LastResearch.last_trie = trie
+        LastResearch.last_key_word = key_word
+
 
         
     return render(request, "itineraires/searchResults.html", context)
+
+
 @login_required
 def SuppressionImage(request, image_id):
     """

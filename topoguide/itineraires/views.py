@@ -163,7 +163,6 @@ def ModificationSortie(request, sortie_id):
             form.save()
             if imgForm.is_valid():
                 # pour chaque image donnee on cree un objet
-                print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
                 images = request.FILES.getlist('image')
                 for im in images:
                     Image.objects.create(

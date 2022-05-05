@@ -1,11 +1,14 @@
+import sys
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views import generic
 from datetime import datetime
 from itineraires.models import Itineraire, Sortie, Image, Commentaire
-from .forms import CommentaireForm, ImageForm, SortieForm
-from django.views.generic.edit import FormMixin
+from .forms import CommentaireForm, ImageForm, SortieForm, StatusForm
+from django.utils.decorators import method_decorator
+from django.views.generic.edit import FormView
 """Toutes les vues affichent une barre de navigation à part le login"""
 
 
@@ -25,46 +28,90 @@ class DetailView(generic.UpdateView):
 
     """
     model = Itineraire
-    form_class = CommentaireForm
     template_name = 'itineraires/itineraire_detail.html'
-    fileds = '__all__'
 
+    #nécéssaire pour pouvoir faire un formmixin dans une vue générique
+    fileds = ['texte']
+    form_class = CommentaireForm
 
+    #on doit définir l'url de redirection en cas de form validé
     def get_success_url(self) -> str:
+        #en cas de succes du form, on est redirigés vers l'itinéraire correspondant
         return '{}#itineraires'.format(reverse('itineraires:detail', kwargs={'pk': self.object.id}))
 
     # redéfinir get_context_data permet d'accéder aux sorties voulues
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        #utilisateur
+        context['user']=self.request.user
+
+        #sorties associées à l'itinéraire
         context["liste_sorties"] = Sortie.objects.filter(
             itineraire__id=self.object.id
         )
+
+        #commentaires associées à l'itinéraire
         context["commentaires"] = Commentaire.objects.filter(
             itineraire__id=self.object.id
         )
+
+        #toutes les images des sorties sur cet itinéraire
         context['photos'] = Image.objects.filter(
             sortie__itineraire__id=self.object.id
         )
+
+        #form de nouveau commentaire
         context['form'] = CommentaireForm(initial={
                                           'utilisateur': self.request.user, 'itineraire': self.object, 'date': datetime.now(), 'status': 1})
+        #form de changement de status
+        context['status_form'] = StatusForm()
         return context
 
-        
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        form = self.get_form()
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
-    
-    def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
-        Commentaire.objects.create(texte=form.cleaned_data['texte'],utilisateur=self.request.user, itineraire=self.object, date=datetime.now(), status=1)
-        return super().form_valid(form)
 
+
+
+    #seuls les utilisateurs connectés peuvent POSTer des données
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+
+        self.object = self.get_object()
+
+        #si le form POSTé est un changement de status
+        if 'status' in request.POST:
+
+            #recherche du commentaire sur lequel on veut effectuer le changement
+            for com in Commentaire.objects.filter(itineraire__id=self.object.id):
+                if "status-form-"+str(com.id) in request.POST:
+                    com_id = com.id
+                    break
+
+            modified_com = Commentaire.objects.get(pk=com_id)
+
+            form = StatusForm(request.POST,instance=modified_com)
+ 
+            if request.user != modified_com.utilisateur:
+                return self.form_invalid(form)
+            #récupération de l'instance associée
+            
+            #validation
+            if form.is_valid():
+                com.status = request.POST['status']
+                com.save()
+                return HttpResponseRedirect(self.get_success_url())
+        
+        #si le form POSTé est un nouveau commentaire
+        else:
+            #récupération le form d commentaire avec la méthode django associée à form_class
+            form = self.get_form()
+
+            #validation
+            if form.is_valid():
+                Commentaire.objects.create(texte=form.cleaned_data['texte'],utilisateur=self.request.user, itineraire=self.object, date=datetime.now(), status=1)
+                return self.form_valid(form)
+        
+        return self.form_invalid(form)
+   
 
 class SortieView(generic.DetailView):
     """
@@ -209,12 +256,6 @@ def SuppressionImage(request, image_id):
     image = Image.objects.get(pk=image_id)
     if request.user != image.sortie.randonneur:
         return redirect('itineraires:detail', pk=image.sortie.itineraire.id)
-    # on garde l'id avant de supprimer pour pouvoir rediriger vers une page cohérente
-    i_id = image.id
     image.delete()
 
     return redirect('itineraires:detail', pk=image.sortie.itineraire.id)
-
-
-def CommentaireView(request, sortie_id):
-    commentaire_list = Commentaire.objects.filter(sortie__id=sortie_id)

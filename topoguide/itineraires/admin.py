@@ -26,4 +26,8 @@ class ImageAdmin(admin.ModelAdmin):
 
 admin.site.register(Image,ImageAdmin)
 
-admin.site.register(Commentaire)
+class CommentaireAdmin(admin.ModelAdmin):
+    #la plupart des champs pourraient être utilisés, on les met tous
+    list_display = ('id', 'texte','utilisateur','status')
+
+admin.site.register(Commentaire,CommentaireAdmin)

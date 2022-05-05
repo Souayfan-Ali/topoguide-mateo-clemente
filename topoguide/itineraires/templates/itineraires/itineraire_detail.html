@@ -5,214 +5,268 @@
 
 
 <div class="container-fluid h-100">
-  <div class="row">
+  <div class="row pb-3">
     <div class="col-sm-6 pt-3 d-flex">
-      <div id="imgCard" class="card text-white bg-transparent w-100">
- 
+      <div id="imgCard" class="card text-white bg-transparent border w-100">
 
-          <!-- Carousel -->
-          <div id="demo" class="carousel slide d-flex h-100 align-items-center" data-bs-interval="false">{% comment %}
-            data-bs-ride="carousel" {% endcomment %}
+        <!-- Carousel des photos des sorties sur cet itinéraire -->
+        <div id="demo" class="carousel slide d-flex h-100 align-items-center carousel-fade" data-bs-interval="false">
 
-            <!-- Indicators/dots -->
-            <div class="carousel-indicators">
-              {% for image in photos %}
-              {% if forloop.first %}
-              <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
-              {% else %}
-              <button type="button" data-bs-target="#demo" data-bs-slide-to="{{forloop.counter0}}"></button>
-              {% endif %}
-              {% endfor %}
-            </div>
-
-            <!-- The slideshow/carousel -->
-            <div class="carousel-inner bg-transparent">
-              {% for image in photos %}
-              {% if forloop.first %}
-              <div class="carousel-item active h-100 ">
-                <img class="card-img-top " src={% static 'itineraires/photo.jpg' %} alt="">
-                <a style="z-index:100"
-                  class="btn position-absolute start-0 {% if user != sortie.randonneur %}disabled d-none{% endif %}"
-                  href={% url 'itineraires:suppression_image' image.id%} role="button">&times</a>
-              </div>
-              {% else %}
-              <div class="carousel-item h-100">
-                <img src={{image.image.url}} alt="no img" class="card-img-top">
-                <a style="z-index:100"
-                  class="btn btn-close btn-close-white p-3 position-absolute start-0 {% if user != image.sortie.randonneur %}disabled d-none{% endif %}"
-                  href={% url 'itineraires:suppression_image' image.id%} role="button"></a>
-              </div>
-              {% endif %}
-              {% endfor %}
-            </div>
-
-            <!-- Left and right controls/icons -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon"></span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
-              <span class="carousel-control-next-icon"></span>
-            </button>
+          <!-- Indicators/dots -->
+          <div class="carousel-indicators">
+            {% for image in photos %}
+            {% if forloop.first %}
+            <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+            {% else %}
+            <button type="button" data-bs-target="#demo" data-bs-slide-to="{{forloop.counter0}}"></button>
+            {% endif %}
+            {% endfor %}
           </div>
-        </div>
-      </div>
 
-    <div class="col-sm-6 pt-3 d-flex">
-      <div class="card w-100">
-        <div class="card-body">
-          <h1>{{ object.nom }}</h1>
-          <p>Duration: {{ object.duree }}</p>
-          <p>Difficulty: {{ object.difficulte }}</p>
-          <p>Point de départ: {{ object.pointDeDepart |default_if_none:"Non connu"}}</p>
-          <p>Altitude de départ: {{ object.altitudeDeDepart |default_if_none:"Non connue" }}</p>
-          <p>Altitude max: {{ object.altitudeMax |default_if_none:"Non connu" }}</p>
-          <p>Denivelé positif: {{ object.denivelePositif |default_if_none:"Non connu" }}</p>
-          <p>Denivelé negatif: {{object.deniveleNegatif |default_if_none:"Non connu"}}</p>
+          <!-- The slideshow -->
+          <div class="carousel-inner bg-transparent">
+            {% if photos|length < 1 %}
+            <div class="carousel-item active">
+              <img class="card-img-top "  style ="height:40vh" src={% static 'itineraires/default-img.svg' %} alt="">
+            </div>
+            {% endif %}
+
+            {% for image in photos %}
+            {% if forloop.first %}
+            <div class="carousel-item active h-100 ">
+              <img class="card-img-top " src={% static 'itineraires/photo.jpg' %} alt="">
+              <a style="z-index:100"
+                class="btn position-absolute start-0 {% if user != sortie.randonneur %}disabled d-none{% endif %}"
+                href={% url 'itineraires:suppression_image' image.id%} role="button">&times</a>
+            </div>
+            {% else %}
+            <div class="carousel-item h-100">
+              <img src={{image.image.url}} alt="no img" class="card-img-top">
+              <a style="z-index:100"
+                class="btn btn-close btn-close-white p-3 position-absolute start-0 {% if user != image.sortie.randonneur %}disabled d-none{% endif %}"
+                href={% url 'itineraires:suppression_image' image.id%} role="button"></a>
+            </div>
+            {% endif %}
+            {% endfor %}
+          </div>
+
+          <!-- Left and right controls/icons -->
+          <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+          </button>
         </div>
       </div>
     </div>
-    
-    <div id="map" class="container-fluid" style="width: 80vw;height: 40vw;left: 8vw;top: 10px;"></div>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
-    integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
-    crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
-    integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
-    crossorigin=""></script>
-    <script type="text/javascript">
-      var altitude =({{object.latitude_Itineraire}}+{{object.latitude_pointDeDepart}})/2;
-      var longitude =({{object.longitude_Itineraire}}+{{object.longitude_pointDeDepart}})/2;
-      var map = L.map('map').setView([altitude,longitude], 13);
-      var tiles = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-        maxZoom: 18,
-        id: 'mapbox/streets-v11',
-        tileSize: 512,
-        zoomOffset: -1
-        }).addTo(map);
-      var marker = L.marker(["{{object.latitude_Itineraire}}","{{ object.longitude_Itineraire }}"]).addTo(map).bindPopup("{{object.nom}}").openPopup();
-      var marker2 = L.marker(["{{object.latitude_pointDeDepart}}","{{ object.longitude_pointDeDepart }}"]).addTo(map).bindPopup("Point De Depart<br> {{object.pointDeDepart}}").openPopup();
-    </script>
 
-    <div class="container-fluid !direction !spacing pt-3 pb-3 pe-0 ps-0">
-      <div class="card">
+    <!-- Informations sur l'itinéraire / carte -->
+    <div class="col-sm-6 pt-3 d-flex">
+      <div class="card w-100">
         <div class="card-body">
 
-          <div class="d-flex">
+          <!-- Boutons pour switch infos/carte -->
+          <div class="d-flex pb-3">
             <div class="d-flex btn-group">
-              <button class="btn btn-outline-secondary" data-bs-target="#demo2" data-bs-slide="prev">Sorties</button>
-              <a name="" id="" class="btn btn-outline-secondary pt-1 w-100" href={% url 'itineraires:creation_sortie'%}
-                role="button">+</a>
+              <button class="btn btn-outline-secondary" data-bs-target="#map-desc" data-bs-slide="prev">Informations</button>
             </div>
             <div class="d-flex btn-group ms-auto">
-              <button class="btn btn-outline-info pt-1 w-100" role="button" data-bs-toggle="collapse"
-                data-bs-target="#textform" onclick="document.getElementById('combutton').click()">+</button>
-              <button id="combutton" class=" btn btn-outline-info  " type="button" data-bs-target="#demo2"
-                data-bs-slide="next">Commentaires</button>
-
+              <!-- Ici on trigger l'event resize manuellement pour palier à un bug de leaflet -->
+              <button id="combutton" class=" btn btn-outline-success  " type="button" data-bs-target="#map-desc" data-bs-slide="next" onclick="window.setTimeout(function() {window.dispatchEvent(new Event('resize'));},10)">Carte</button>
+              
             </div>
-
           </div>
-
-          <div id="demo2" class="carousel slide" data-bs-wrap="false" data-bs-ride="carousel" data-bs-interval="false">
-
-
+          <div id="map-desc" class="carousel slide carousel-fade d-flex h-100" data-bs-touch="false" data-bs-wrap="false" data-bs-interval="false" >
+          
             <div class="carousel-inner">
-              <div class="carousel-item">
-                <div id="sorties" class="">
 
-                  <div class="row d-none d-xl-flex pt-3 pb-3">
-                    <div class="col-2 ">Randonneur</div>
-                    <div class="col-2 ">Date de sortie</div>
-                    <div class="col-1 ">Météo</div>
-                    <div class="col-1 ">Niveau</div>
-                    <div class="col-1 ">Durée</div>
-                    <div class="col-1 ">Difficulté</div>
+              <!-- Infos sur l'itineraire-->
+              <div class="carousel-item active">
+                <h1>{{ object.nom }}</h1>
+                <p>Duration: {{ object.duree }}</p>
+                <p>Difficulty: {{ object.difficulte }}</p>
+                <p>Point de départ: {{ object.pointDeDepart |default_if_none:"Non connu"}}</p>
+                <p>Altitude de départ: {{ object.altitudeDeDepart |default_if_none:"Non connue" }}</p>
+                <p>Altitude max: {{ object.altitudeMax |default_if_none:"Non connu" }}</p>
+                <p>Denivelé positif: {{ object.denivelePositif |default_if_none:"Non connu" }}</p>
+                <p>Denivelé negatif: {{object.deniveleNegatif |default_if_none:"Non connu"}}</p>
+              </div>
+              
+              <!-- Carte -->
+              <div class="carousel-item ">
+                
+                <div id="map" class="d-block embed-responsive-item mb-3" style="width: 100%; height: 50vh"></div>
+                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+                integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+                crossorigin="" />
+                <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+                integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+                crossorigin=""></script>
+                <script defer type="text/javascript">
+                  var latitude = ({{object.latitude_pointDeDepart}} + {{object.latitude_Itineraire}}) / 2
+                  var longitude = ({{object.longitude_pointDeDepart}} + {{object.longitude_Itineraire}}) / 2
+                  var map = L.map('map').setView([latitude, longitude], 12);
+                  var tiles = L.tileLayer(
+                    'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+                      maxZoom: 18,
+                      id: 'mapbox/streets-v11',
+                      tileSize: 512,
+                      zoomOffset: -1
+                    }).addTo(map);
+                    var marker = L.marker(["{{object.latitude_Itineraire}}", "{{ object.longitude_Itineraire }}"]).addTo(map)
+                    .bindPopup("{{object.nom}}").openPopup();
+                    var marker2 = L.marker(["{{object.latitude_pointDeDepart}}", "{{ object.longitude_pointDeDepart }}"]).addTo(
+                      map).bindPopup("Point De Depart<br> {{object.pointDeDepart}}").openPopup();
+                    </script>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+    </div>
 
-                  <div class="row d-xl-none">
-                    <div class="col-6 ">Date de sortie</div>
-                    <div class="col-3 ">Durée</div>
-                    <div class="col-3 ">Difficulté</div>
-                  </div>
+  </div>
 
-                  {% for sortie in  liste_sorties %}
-                  <div class="row d-xl-none d-flex border-top" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#sortie_btn{{sortie.id}}" aria-controls="1" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <div class="col-6 pt-2 ">{{sortie.randonneur}}</div>
-                    <div class="col-3 pt-2 ">{{sortie.duree}}h</div>
-                    <div class="col-3 pt-2 ">{{sortie.difficulte}}</div>
-                  </div>
+  
 
-                  <div id="sortie_btn{{sortie.id}}" class="collapse d-xl-none">
-                    <div class="row d-flex flex-column">
-                      <div class="pt-2 ">Météo: {{sortie.get_meteo_display}}</div>
-                      <div class="pt-2 ">Date: {{sortie.date_sortie}}</div>
-                      <div class="pt-2 ">Niveau: {{sortie.get_experience_display}}</div>
-                      <div class="row pt-2 pb-2 d-flex justify-content-evenly">
-                        <a class="btn btn-outline-warning col-5 {% if user != sortie.randonneur %}disabled{% endif %}"
-                          href={% url 'itineraires:modification_sortie' sortie.id%} role="button">Modifier</a>
-                        <a class="btn btn-outline-danger col-5 {% if user != sortie.randonneur %}disabled{% endif %}"
-                          href={% url 'itineraires:suppression_sortie' sortie.id%} role="button">Delete</a>
-                      </div>
-                    </div>
-                  </div>
+  <!-- Sorties/Commentaires -->
+  <div class="container-fluid !direction !spacing pt-3 pb-3 pe-0 ps-0">
+    <div class="card">
+      <div class="card-body">
 
-                  <div class="row d-none d-xl-flex">
-                    <div class="col-2 pt-2 ">{{sortie.randonneur}}</div>
-                    <div class="col-2 pt-2 ">{{sortie.date_sortie}}</div>
-                    <div class="col-1 pt-2 ">{{sortie.get_meteo_display}}</div>
-                    <div class="col-1 pt-2 ">{{sortie.get_experience_display}}</div>
-                    <div class="col-1 pt-2 ">{{sortie.duree}}h</div>
-                    <div class="col-1 pt-2 ">{{sortie.difficulte}}</div>
-                    <div class="row col-4 pt-2 d-flex justify-content-evenly">
-                      <a class="btn btn-outline-warning col-4 pl-2 {% if user != sortie.randonneur %}disabled{% endif %}"
+        <!-- Boutons pour switch sorties / commentaires-->
+        <div class="d-flex">
+          <div class="d-flex btn-group">
+            <button class="btn btn-outline-secondary" data-bs-target="#demo2" data-bs-slide="prev">Sorties</button>
+            <a name="" id="" class="btn btn-outline-secondary pt-1 w-100" href={% url 'itineraires:creation_sortie'%}
+              role="button">+</a>
+          </div>
+          <div class="d-flex btn-group ms-auto">
+            <button class="btn btn-outline-info pt-1 w-100" role="button" data-bs-toggle="collapse"
+              data-bs-target="#textform">+</button>
+            <button id="combutton" class=" btn btn-outline-info  " type="button" data-bs-target="#demo2"
+              data-bs-slide="next">Commentaires</button>
+          </div>
+        </div>
+
+        <!-- Sorties / Commentaires -->
+        <div id="demo2" class="carousel slide" data-bs-wrap="false" data-bs-ride="carousel" data-bs-interval="false">
+
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <div id="sorties" class="">
+
+                <div class="row d-none d-xl-flex pt-3 pb-3">
+                  <div class="col-2 ">Randonneur</div>
+                  <div class="col-2 ">Date de sortie</div>
+                  <div class="col-1 ">Météo</div>
+                  <div class="col-1 ">Niveau</div>
+                  <div class="col-1 ">Durée</div>
+                  <div class="col-1 ">Difficulté</div>
+                </div>
+
+                <div class="row d-xl-none">
+                  <div class="col-6 ">Date de sortie</div>
+                  <div class="col-3 ">Durée</div>
+                  <div class="col-3 ">Difficulté</div>
+                </div>
+
+                {% for sortie in  liste_sorties %}
+                <div class="row d-xl-none d-flex border-top" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#sortie_btn{{sortie.id}}" aria-controls="1" aria-expanded="false"
+                  aria-label="Toggle navigation">
+                  <div class="col-6 pt-2 ">{{sortie.randonneur}}</div>
+                  <div class="col-3 pt-2 ">{{sortie.duree}}h</div>
+                  <div class="col-3 pt-2 ">{{sortie.difficulte}}</div>
+                </div>
+
+                <div id="sortie_btn{{sortie.id}}" class="collapse d-xl-none">
+                  <div class="row d-flex flex-column">
+                    <div class="pt-2 ">Météo: {{sortie.get_meteo_display}}</div>
+                    <div class="pt-2 ">Date: {{sortie.date_sortie}}</div>
+                    <div class="pt-2 ">Niveau: {{sortie.get_experience_display}}</div>
+                    <div class="row pt-2 pb-2 d-flex justify-content-evenly">
+                      <a class="btn btn-outline-warning col-5 {% if user != sortie.randonneur %}disabled{% endif %}"
                         href={% url 'itineraires:modification_sortie' sortie.id%} role="button">Modifier</a>
-                      <a class="btn btn-outline-danger col-4 pl-2 {% if user != sortie.randonneur %}disabled{% endif %}"
+                      <a class="btn btn-outline-danger col-5 {% if user != sortie.randonneur %}disabled{% endif %}"
                         href={% url 'itineraires:suppression_sortie' sortie.id%} role="button">Delete</a>
                     </div>
                   </div>
-
-
-                  {% endfor %}
                 </div>
-              </div>
-              <div class="carousel-item active">
-                <div id="commentaires" class="list-group pt-3">
-                  <div class="collapse p-3" id="textform">
-                    <form method="post" class="form">
 
-                      {% csrf_token %}
-                      {% bootstrap_form form show_label=False %}
-                      {% buttons %}
-                      <div class="d-grid">
-
-                        <button class="btn btn-outline-primary btn-block " type="submit">Poster</button>
-                      </div>
-                      {% endbuttons %}
-                    </form>
-
+                <div class="row d-none d-xl-flex">
+                  <div class="col-2 pt-2 ">{{sortie.randonneur}}</div>
+                  <div class="col-2 pt-2 ">{{sortie.date_sortie}}</div>
+                  <div class="col-1 pt-2 ">{{sortie.get_meteo_display}}</div>
+                  <div class="col-1 pt-2 ">{{sortie.get_experience_display}}</div>
+                  <div class="col-1 pt-2 ">{{sortie.duree}}h</div>
+                  <div class="col-1 pt-2 ">{{sortie.difficulte}}</div>
+                  <div class="row col-4 pt-2 d-flex justify-content-evenly">
+                    <a class="btn btn-outline-warning col-4 pl-2 {% if user != sortie.randonneur %}disabled{% endif %}"
+                      href={% url 'itineraires:modification_sortie' sortie.id%} role="button">Modifier</a>
+                    <a class="btn btn-outline-danger col-4 pl-2 {% if user != sortie.randonneur %}disabled{% endif %}"
+                      href={% url 'itineraires:suppression_sortie' sortie.id%} role="button">Delete</a>
                   </div>
-                  {% for commentaire in commentaires %}
-                  <li class="list-group-item border-0">
-                    <ul class="list-group list-group-horizontal">
-                      <li class="list-group-item list-group-item-primary">{{commentaire.utilisateur}}</li>
-                      <li class="list-group-item list-group-item-secondary">{{commentaire.date}}</li>
-                      <li class="list-group-item">{{commentaire.texte}}</li>
-                    </ul>
-                  </li>
-                  {% endfor %}
                 </div>
+
+
+                {% endfor %}
               </div>
             </div>
 
+            <!-- Affichage des commentaires -->
+            <div class="carousel-item">
+              <div id="commentaires" class="list-group pt-3">
+                
+                <!-- Ajout d'un nouveau commentaire -->
+                <div class="collapse p-3" id="textform">
+                  <form method="post" class="form">
+                    {% csrf_token %}
+                    {% bootstrap_form form show_label=False %}
+                    {% buttons %}
+                    <div class="d-grid">
+                      <button class="btn btn-outline-primary btn-block " type="submit">Poster</button>
+                    </div>
+                    {% endbuttons %}
+                  </form>
+                </div>
 
+                <!-- Visualisation des commentaires -->
+                {% for commentaire in commentaires %}
+                {% if user.is_staff or commentaire.status == 1 or user == commentaire.utilisateur and commentaire.status == 3 %}
+                <li class="list-group-item border-0 ">
+                  <ul class="list-group list-group-horizontal">
+                    <li class="list-group-item list-group-item-primary" data-bs-toggle="collapse" data-bs-target="#status{{commentaire.id}}">
+                      {{commentaire.utilisateur}}
+                    </li>
+
+                    <!-- form de changement de status-->
+                    <li id="status{{commentaire.id}}" class="collapse collapse-horizontal list-group-item list-group-item-warning">
+                      <form action method="post">
+                        {% csrf_token %}
+                        {% bootstrap_label commentaire.get_status_display %}
+                        {% bootstrap_form status_form show_label=False%}
+                        {% buttons %}
+
+                        <!-- le nom du bouton name="status-form-{{commentaire.id}}" permet au form de savoir quel commentaire il affecte -->
+                        <div class="d-grid">
+                          <button name="status-form-{{commentaire.id}}" class="btn btn-outline-primary btn-block {% if user != commentaire.utilisateur and not user.is_staff %}disabled{% endif %}" type="submit">Modifier</button>
+                        </div>
+                        {% endbuttons %}
+                      </form>
+                    </li>
+                    <li class="list-group-item list-group-item-secondary">{{commentaire.date}}</li>
+                    <li class="list-group-item">{{commentaire.texte}}</li>
+                  </ul>
+                </li>
+                {% endif %}
+                {% endfor %}
+              </div>
+            </div>
           </div>
-
         </div>
       </div>
-
-
     </div>
   </div>
   {% endblock content %}

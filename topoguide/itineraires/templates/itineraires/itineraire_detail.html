@@ -8,7 +8,6 @@
     <div class="col-sm-6 pt-3 d-flex">
       <div id="imgCard" class="card text-white bg-transparent border w-100">
 
-
         <!-- Carousel des photos des sorties sur cet itinéraire -->
         <div id="demo" class="carousel slide d-flex h-100 align-items-center carousel-fade" data-bs-interval="false">
 
@@ -251,7 +250,7 @@
 
                         <!-- le nom du bouton name="status-form-{{commentaire.id}}" permet au form de savoir quel commentaire il affecte -->
                         <div class="d-grid">
-                          <button name="status-form-{{commentaire.id}}" class="btn btn-outline-primary btn-block " type="submit">Modifier</button>
+                          <button name="status-form-{{commentaire.id}}" class="btn btn-outline-primary btn-block {% if user != commentaire.utilisateur and not user.is_staff %}disabled{% endif %}" type="submit">Modifier</button>
                         </div>
                         {% endbuttons %}
                       </form>

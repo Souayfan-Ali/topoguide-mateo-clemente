@@ -86,8 +86,13 @@ class DetailView(generic.UpdateView):
                     com_id = com.id
                     break
 
+            modified_com = Commentaire.objects.get(pk=com_id)
+
+            form = StatusForm(request.POST,instance=modified_com)
+ 
+            if request.user != modified_com.utilisateur:
+                return self.form_invalid(form)
             #récupération de l'instance associée
-            form = StatusForm(request.POST,instance=Commentaire.objects.get(pk=com_id))
             
             #validation
             if form.is_valid():

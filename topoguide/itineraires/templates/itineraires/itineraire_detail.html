@@ -233,15 +233,16 @@
 
                 </div>
                 {% for commentaire in commentaires %}
-                <li class="list-group-item border-0">
+                {% if user.is_staff or commentaire.status == 1 or user == commentaire.utilisateur and commentaire.status == 3 %}
+                <li class="list-group-item border-0 ">
                   <ul class="list-group list-group-horizontal">
                     <li class="list-group-item list-group-item-primary" data-bs-toggle="collapse" data-bs-target="#status{{commentaire.id}}">
-                        {{commentaire.utilisateur}}
-                    
+                      {{commentaire.utilisateur}}
+                      
                     </li>
                     <li id="status{{commentaire.id}}" class="collapse collapse-horizontal list-group-item list-group-item-warning">
                       <form action method="post">
-
+                        
                         {% csrf_token %}
                         {% bootstrap_form status_form show_label=False %}
                         {% buttons %}
@@ -255,6 +256,7 @@
                     <li class="list-group-item">{{commentaire.texte}}</li>
                   </ul>
                 </li>
+                {% endif %}
                 {% endfor %}
               </div>
             </div>

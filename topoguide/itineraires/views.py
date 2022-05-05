@@ -70,12 +70,13 @@ class DetailView(generic.UpdateView):
                 break
 
         if 'status' in request.POST:
-            form = StatusForm(instance=Commentaire.objects.get(pk=com_id))
+            form = StatusForm(request.POST,instance=Commentaire.objects.get(pk=com_id))
             print(form)
         else:
             form = self.get_form()
 
-        if 'status' in request.POST:
+        print(form.data)
+        if 'status' in request.POST and form.is_valid():
             com.status = request.POST['status']
             com.save()
             return HttpResponseRedirect(self.get_success_url())

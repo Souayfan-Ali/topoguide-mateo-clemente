@@ -5,15 +5,16 @@
 
 {# En tête de la page #}
 {% block content %}
+
 <div class="container mt-3">
     <h1>Résulats de la recherche</h1>
 
     <form method="POST" action={% url 'itineraires:searchResults' "filtre" %} >
         {% csrf_token %}
         <div class="input-group mb-3">
-            <button class="btn btn{% if filtre_models.0 == False %}-outline{%endif%}-primary" type="button" ><a href={% url 'itineraires:searchResults' "filtre-sortie"%}>Sorties</a></button>
-            <button class="btn btn{% if filtre_models.1 == False%}-outline{%endif%}-primary" type="button"><a href={% url 'itineraires:searchResults' "filtre-itineraires"%}>Itineraires</a></button>
-            <button class="btn btn{% if filtre_models.2 ==  False%}-outline{%endif%}-primary" type="button"><a href={% url 'itineraires:searchResults' "filtre-commentaires"%}>Commentaires</a></button>
+            <button class="btn btn{% if filtre_models.0 == False %}-outline{%endif%}-primary" type="button" ><a style="color:black;" href={% url 'itineraires:searchResults' "filtre-sortie"%}>Sorties</a></button>
+            <button class="btn btn{% if filtre_models.1 == False%}-outline{%endif%}-primary" type="button"><a style="color:black;" href={% url 'itineraires:searchResults' "filtre-itineraires"%}>Itineraires</a></button>
+            <button class="btn btn{% if filtre_models.2 ==  False%}-outline{%endif%}-primary" type="button"><a style="color:black;" href={% url 'itineraires:searchResults' "filtre-commentaires"%}>Commentaires</a></button>
             <input type="search" id="search-filtre" name="search-filtre" class="form-control" value={{key_word}}>
             <button class="btn btn-success" type="submit">Go</button> 
         </div>

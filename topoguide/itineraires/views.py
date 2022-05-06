@@ -163,12 +163,13 @@ def ModificationSortie(request, sortie_id):
             form.save()
             if imgForm.is_valid():
                 # pour chaque image donnee on cree un objet
-                images = request.FILES.getlist('images')
+                images = request.FILES.getlist('image')
                 for im in images:
                     Image.objects.create(
                         sortie=sortie_instance,
                         image=im
                     )
+
             # ce redirect renvoie vers l'itinéraire où l'on se trouvait avant la modification de sortie
             return redirect('itineraires:detail', pk=form.cleaned_data['itineraire'].id)
     return render(request, 'itineraires/modification_sortie.html', {'form': form, 'imgForm': imgForm})

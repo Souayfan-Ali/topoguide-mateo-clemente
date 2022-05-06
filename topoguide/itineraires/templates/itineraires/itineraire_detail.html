@@ -34,18 +34,18 @@
             {% for image in photos %}
             {% if forloop.first %}
             <div class="carousel-item active h-100 ">
-              <img class="card-img-top " src={% static 'itineraires/photo.jpg' %} alt="">
-              <a style="z-index:100"
-                class="btn position-absolute start-0 {% if user != sortie.randonneur %}disabled d-none{% endif %}"
-                href={% url 'itineraires:suppression_image' image.id%} role="button">&times</a>
-            </div>
-            {% else %}
-            <div class="carousel-item h-100">
               <img src={{image.image.url}} alt="no img" class="card-img-top">
-              <a style="z-index:100"
-                class="btn btn-close btn-close-white p-3 position-absolute start-0 {% if user != image.sortie.randonneur %}disabled d-none{% endif %}"
-                href={% url 'itineraires:suppression_image' image.id%} role="button"></a>
-            </div>
+              <a id="closeButton" style="z-index:100"
+                class="link-danger h1 p-3 position-absolute bottom-0 start-50 translate-middle-x {% if user != image.sortie.randonneur %}disabled d-none{% endif %}"
+                href={% url 'itineraires:suppression_image' image.id%} role="button">&times</a>
+              </div>
+              {% else %}
+              <div class="carousel-item h-100">
+                <img src={{image.image.url}} alt="no img" class="card-img-top">
+                <a id="closeButton" style="z-index:100"
+                  class="link-danger h1 p-3 position-absolute bottom-0 start-50 translate-middle-x {% if user != image.sortie.randonneur %}disabled d-none{% endif %}"
+                  href={% url 'itineraires:suppression_image' image.id%} role="button">&times</a>
+              </div>
             {% endif %}
             {% endfor %}
           </div>

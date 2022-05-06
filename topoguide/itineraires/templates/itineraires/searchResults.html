@@ -7,10 +7,82 @@
 {% block content %}
 <div class="container mt-3">
     <h1>Résulats de la recherche</h1>
-    <p> Mot-clé: "{{key_word|truncatechars:15}}" --- Trie: "{{filtre}}" </p>
+
+    <form method="POST" action={% url 'itineraires:searchResults' "filtre" %} >
+        {% csrf_token %}
+        <div class="input-group mb-3">
+            <button class="btn btn{% if filtre_models.0 == False %}-outline{%endif%}-primary" type="button" ><a href={% url 'itineraires:searchResults' "filtre-sortie"%}>Sorties</a></button>
+            <button class="btn btn{% if filtre_models.1 == False%}-outline{%endif%}-primary" type="button"><a href={% url 'itineraires:searchResults' "filtre-itineraires"%}>Itineraires</a></button>
+            <button class="btn btn{% if filtre_models.2 ==  False%}-outline{%endif%}-primary" type="button"><a href={% url 'itineraires:searchResults' "filtre-commentaires"%}>Commentaires</a></button>
+            <input type="search" id="search-filtre" name="search-filtre" class="form-control" value={{key_word}}>
+            <button class="btn btn-success" type="submit">Go</button> 
+        </div>
+    </form>
+
+    {# Filtre de recherche à l'aide d'un mot clé #}<!--
+    <div class="input-group mb-3">
+        <form method="POST" action={% url 'itineraires:searchResults' "filtre" %} >
+            {% csrf_token %}
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" id="sorties" name="sorties" value="on" >
+              <label class="form-check-label" for="check1">Sortie</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" id="itineraires" name="itineraires" value="on">
+              <label class="form-check-label" for="check2">Itinéraires</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" id="commentaires" name="commentaires" value="on">
+              <label class="form-check-label">Commentaires</label>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Search</button>
+          </form>
+        </div>
+    </div>-->
+    
+
+</div>
+
+    <div class="container mt-3">
+    
+    <p> Mot-clé: "{{key_word|truncatechars:15}}" --- Trie: "{{trie}}" </p>
+
+
+        <div class="navbar-nav d-flex flex-row me-auto">
+    
+      <form method="POST" action={% url 'itineraires:searchResults' "trie" %}>
+        {% csrf_token %}
+        <div class="input-group mb-3">
+        {# trie de trie à appliquer à la recherche #}
+        <!--(si trie mais aucune recherche on affiche tous les résulats)-->
+        <span class="input-group-text">Trier</span>
+        <select name="trie" id="trie" class="form-select">
+          <option value="aucun">Aucun</option>
+          {% if last_filtre_models.0 or last_filtre_models.2 %}
+          <optgroup label="Sorties/Commentaires">
+            <option value="date-recente"{% if trie == "date-recente" %} selected {% endif %}>Date (Récente)</option>
+            <option value="date-ancienne"{% if trie == "date-ancienne" %} selected {% endif %}>Date (Ancienne)</option>
+          </optgroup>
+          {% endif %}
+          {% if last_filtre_models.1 %}
+          <optgroup label="Itineraires">
+            <option value="popularite-decroissante"{% if trie == "popularite-decroissante" %} selected {% endif %}>Popularité</option>
+            <option value="difficultee-croissante-moy"{% if trie == "difficultee-croissante-moy" %} selected {% endif %}>Difficultee</option>
+            <option value="duree-croissante-moy"{% if trie == "duree-croissante-moy" %} selected {% endif %}>Durée</option>
+            <option value="niveau-exp-croissant-moy"{% if trie == "niveau-exp-croissant-moy" %} selected {% endif %}>Niveau d'expérience</option>
+          </optgroup>
+          {% endif %}
+        </select>
+
+        {# Bouton de la validation du formulaire #}
+        <button class="btn btn-success" type="submit">OK</button>
+        </div>
+      </form>
+    
+    </div>
 
     {# Affichage de la liste d'itinéraires trouvée #}
-    {% if liste_itinineraires %}
+    {% if liste_itinineraires and filtre_models.1%}
         <div class="container mt-3">
             <h2>Itinéraire(s) trouvé(s):</h2> 
             
@@ -21,17 +93,17 @@
                         <tr>
                             <th>Itinéraire</th>
                             <th>Durée</th>
-                            <th>Difficultée</th>
-                            {% if filtre == "difficultee-croissante-moy" %}
-                                <th>Difficultée réelle</th>
+                            <th>Difficulté</th>
+                            {% if trie == "difficultee-croissante-moy" %}
+                                <th>Difficulté réelle</th>
                             {% endif %}
-                            {% if filtre == "popularite-decroissante" %}
+                            {% if trie == "popularite-decroissante" %}
                                 <th>Popularité</th>
                             {% endif %}
-                            {% if filtre == "duree-croissante-moy" %}
+                            {% if trie == "duree-croissante-moy" %}
                                 <th>Durée réelle</th>
                             {% endif %}
-                            {% if filtre == "niveau-exp-croissant-moy" %}
+                            {% if trie == "niveau-exp-croissant-moy" %}
                                 <th>Expérience moyenne</th>
                             {% endif %}
                             
@@ -57,22 +129,22 @@
                                     <td><a href="{% url 'itineraires:detail' itineraire_double.0.id %}">
                                         {{ itineraire_double.0.difficulte }}/5
                                     </a></td>
-                                    {% if filtre == "difficultee-croissante-moy" %}
+                                    {% if trie == "difficultee-croissante-moy" %}
                                         <td><a href="{% url 'itineraires:detail' itineraire_double.0.id %}">
                                             {{ itineraire_double.2|floatformat:1 }}/5
                                         </a></td>
                                     {% endif %}
-                                    {% if filtre == "popularite-decroissante" %}
+                                    {% if trie == "popularite-decroissante" %}
                                     <td><a href="{% url 'itineraires:detail' itineraire_double.0.id %}">
                                         {{ itineraire_double.3 }}
                                     </a></td>
                                     {% endif %}
-                                    {% if filtre == "duree-croissante-moy" %}
+                                    {% if trie == "duree-croissante-moy" %}
                                     <td><a href="{% url 'itineraires:detail' itineraire_double.0.id %}">
                                         {{ itineraire_double.4|time:"H\h i\m" }}
                                     </a></td>
                                     {% endif %}
-                                    {% if filtre == "niveau-exp-croissant-moy" %}
+                                    {% if trie == "niveau-exp-croissant-moy" %}
                                     <td><a href="{% url 'itineraires:detail' itineraire_double.0.id %}">
                                         {{ itineraire_double.5|floatformat:1 }}/3
                                     </a></td>
@@ -106,7 +178,7 @@
     {% endif %}
 
     {# Affichage de la liste de sorties trouvée #}
-    {% if liste_sorties %}
+    {% if liste_sorties and filtre_models.0 %}
         <div class="container mt-3">
             <h2>Sortie(s) trouvée(s):</h2>
 
@@ -117,7 +189,7 @@
                             <th>Randonneur</th>
                             <th>Itineraires correspondant</th>
                             <th>Durée</th>
-                            <th>Difficultée ressentie</th>
+                            <th>Difficulté ressentie</th>
                             <th>Date d'ajout</th>
                             <th></th>
                         </tr>
@@ -154,6 +226,26 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+
+    {% endif %}
+
+    {% if liste_commentaires and filtre_models.2 %}
+        <div class="container mt-3">
+
+            <h2>Commentaires(s) trouvé(s):</h2>
+            {% for commentaire in liste_commentaires %}
+                <li class="list-group-item border-0">
+                <ul class="list-group list-group-horizontal">
+                    <li class="list-group-item list-group-item-primary">{{commentaire.0.utilisateur}}</li>
+                    <li class="list-group-item list-group-item-secondary">{{commentaire.0.date}}</li>
+                    <li class="list-group-item list-group-item-primary">
+                        <a href="{% url 'itineraires:detail' commentaire.0.itineraire_id %}">
+                        {{commentaire.0.itineraire}}</a></li>
+                    <li class="list-group-item">{{commentaire.0.texte|linebreaks|safe}}</li>
+                </ul>
+                </li>
+            {% endfor %}
         </div>
 
     {% endif %}

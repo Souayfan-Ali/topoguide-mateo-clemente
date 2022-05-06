@@ -91,6 +91,8 @@ class Itineraire(models.Model):
         """
         liste_sorties = Sortie.objects.filter(itineraire__nom=self.nom)
         nb_sorties = len(liste_sorties)
+        if nb_sorties == 0:
+            return self.difficulte
         somme_difficultee = 0
         for sortie in liste_sorties:
             somme_difficultee += sortie.difficulte
@@ -104,7 +106,14 @@ class Itineraire(models.Model):
         """
         liste_sorties = Sortie.objects.filter(itineraire__nom=self.nom)
         nb_sorties = len(liste_sorties)
+
+        if nb_sorties == 0:
+            heures = self.duree.seconds/3600
+            duree_min = int((heures*60)%24)
+            duree_heure = int(heures)
+            return datetime.time(hour=duree_heure, minute=duree_min)
         somme_duree_heure = 0
+
         for sortie in liste_sorties:
             somme_duree_heure += sortie.duree.seconds/3600
         moyenne_duree_min = int(somme_duree_heure%nb_sorties)
@@ -117,6 +126,9 @@ class Itineraire(models.Model):
         Retourne l'expérience moyenne des randonneurs qui ont fait la sortie
         """
         liste_sorties = Sortie.objects.filter(itineraire__nom=self.nom)
+        nb_sorties = len(liste_sorties)
+        if nb_sorties == 0:
+            return 0
         somme_experience = 0
         nb_randonneurs = 0
         for sortie in liste_sorties:
@@ -157,9 +169,9 @@ class Itineraire(models.Model):
 
 
 
-    def filtrer(filtre, liste_itineraires):
+    def trier(trie, liste_itineraires):
         """
-        Trie la liste des sorties en fonction du filtre:
+        Trie la liste des sorties en fonction du de trie:
         -"popularite-decroissante" : les itineraires sont triés du plus populaire au moins populaire
             (on mesure la popularité par le nombre de sorties associés à cette itineraire)
         -"difficultee-croissante-moy" : les itinéraires sont triés du plus facile au plus difficile
@@ -170,11 +182,11 @@ class Itineraire(models.Model):
             ayant partici^pé à la sortie (du plus faible niveau d'expérience au plus élevé)
 
         ARGUMENTS:
-            -filtre : le filtre choisit
+            -trie : le trie choisit
             -liste_itineraires : la liste des itinéraires à trier -> rappel [...[itinéraires_i, endroit où le mot clé à été trouvé, ...]...]
 
         RETURN:
-            -liste_itineraire_triee_<filtre_appliqué> = la liste (toujours la liste de liste) triée en fonction du mot clé
+            -liste_itineraire_triee_<trie_appliqué> = la liste (toujours la liste de liste) triée en fonction du mot clé
         """
         #Si la liste est vide on ne la trie pas
         if not liste_itineraires:
@@ -183,7 +195,7 @@ class Itineraire(models.Model):
         max_init = len(liste_itineraires)
 
         #Trie sur la popularité
-        if (filtre == "popularite-decroissante"):
+        if (trie == "popularite-decroissante"):
 
             liste_itineraire_triee_popularite_decroissante = []
 
@@ -212,7 +224,7 @@ class Itineraire(models.Model):
 
 
         #Trie sur la difficultée
-        if (filtre == "difficultee-croissante-moy"):
+        if (trie == "difficultee-croissante-moy"):
 
             liste_itineraire_triee_difficultee_croissante = []
 
@@ -242,7 +254,7 @@ class Itineraire(models.Model):
 
 
         #Trie sur la durée moyenne
-        if (filtre == "duree-croissante-moy"):
+        if (trie == "duree-croissante-moy"):
 
             liste_itineraire_triee_duree_croissante = []
 
@@ -270,7 +282,7 @@ class Itineraire(models.Model):
             return liste_itineraire_triee_duree_croissante
 
         #Trie sur le niveau d'expérience moyen des participants
-        if (filtre == "niveau-exp-croissant-moy"):
+        if (trie == "niveau-exp-croissant-moy"):
 
             liste_itineraire_triee_experience_croissante = []
 
@@ -356,14 +368,14 @@ class Sortie(models.Model):
         return sortie_key_word_all_list
     
     
-    def filtrer(filtre, liste_sorties):
+    def trier(trie, liste_sorties):
         """
-        Trie la liste des sorties en fonction du filtre:
+        Trie la liste des sorties en fonction du filtre de trie:
         -date-recente : les sorties de la plus récente à la plus ancienne
         -date-ancienne : les sorties de la plus ancienne à la plus récente
 
         ARGUMENTS:
-            -filtre : le filtre choisit
+            -trie : le trie choisit
             -liste_sorties : la liste des sorties à trier -> rappel [...(sortie_i, endroit où le mot clé à été trouvé)...]
 
         RETURN:
@@ -406,11 +418,11 @@ class Sortie(models.Model):
             liste_sorties_triee_dates_croissantes.append(liste_sorties.pop(indice_sortie_min))
             
         
-        #Si le filtre est de la date la plus ancienne à la plus récente
-        if filtre == "date-ancienne":
+        #Si le trie est de la date la plus ancienne à la plus récente
+        if trie == "date-ancienne":
             return liste_sorties_triee_dates_croissantes
 
-        #Si le filtre est de la date la plus récente à la plus ancienne
+        #Si le trie est de la date la plus récente à la plus ancienne
         liste_sorties_triee_dates_croissantes.reverse()
         return liste_sorties_triee_dates_croissantes
 
@@ -443,5 +455,115 @@ class Commentaire(models.Model):
 
     status = models.IntegerField(choices=typeStatus)
     
+    def get_from_key_word(key_word):
+        """
+        Création d'une liste de doubles contenant le commentaire avec le mot clé correspondant
+        et l'endroit ou le mot clé a été trouvé
+        
+        ARGUMENT :
+            -key_word : str contenant le mot clé saisi dans la barre de recherche
 
+        RETURN:
+            -commentaire_key_word_all_list : une liste de doubles contenant (commentaire, endroit ou le mot clé a été trouvé)
+        """
+        #Recherche du mot clé dans le nom des utilisateur dans les commentaires
+        commentaire_key_word_in_utilisateur = Commentaire.objects.filter(utilisateur__username__icontains=key_word)
+        commentaire_key_word_in_utilisateur_list = [[commentaire, "utilisateur", ""] for commentaire in commentaire_key_word_in_utilisateur]
+
+        #Recherche du mot clé dans le corps du commentaire dans tous les commentaires
+        commentaire_key_word_in_corpus = Commentaire.objects.filter(texte__icontains=key_word)
+        commentaire_key_word_in_corpus_list = [[commentaire, "texte", ""] for commentaire in commentaire_key_word_in_corpus]
+
+        #Assemblage des sorties avec le mot clé dans une seule liste
+        commentaire_key_word_all_list = commentaire_key_word_in_utilisateur_list+commentaire_key_word_in_corpus_list
+        
+      
+        return commentaire_key_word_all_list
+
+    def organise_list(liste_commentaires):
+        """
+        Réorganise la liste des commentaires pour éviter les doublons
+        """
+        liste_commentaires_new = []
+
+        if not liste_commentaires:
+            return liste_commentaires_new
+
+       
+        while liste_commentaires:
+            
+            commentaire_double = liste_commentaires.pop(0)
+            liste_commentaires_new.append(commentaire_double)
+            taille = len(liste_commentaires)
+
+            i=0
+            while i<taille:
+                commentaire_double_actuel = liste_commentaires[i]
+                if(commentaire_double_actuel[0].id == commentaire_double[0].id):
+                    endroit = commentaire_double_actuel[1]
+                    liste_commentaires.pop(i)
+                    taille -=1
+                    commentaire_double[2] = endroit
+                else:
+                    i+=1
+        
+        return liste_commentaires_new
+
+    def trier(trie, liste_commentaires):
+        """
+        Trie la liste des commentaires en fonction du filtre de trie:
+        -date-recente : les commentaires du plus récent au plus ancien
+        -date-ancienne : les commentaires du plus ancient au plus récent
+
+        ARGUMENTS:
+            -trie : le trie choisit
+            -liste_commentaires : la liste des commentaire à trier -> rappel [...[commentaire_i, endroit où le mot clé à été trouvé,...]...]
+
+        RETURN:
+            -liste_commentaire_triee = la liste (toujours la liste de double) triée en fonction du mot clé
+        """
+
+        #Si la liste des sortie est vide on ne l'a trie pas
+        if not liste_commentaires:
+            return liste_commentaires
+
+        
+        #Déclaration de la nouvelle liste triée
+        liste_commentaires_triee_dates_croissantes = []
+        max_init = len(liste_commentaires)
+
+
+        #On parcours tous les éléments de la liste des commentaires
+        #Au rang k on a k éléments dans la liste triée et k-taille initiale dans la liste initiale
+        for k in range(0,max_init):
+
+            commentaire_date_min = liste_commentaires[0][0]
+            date_min = commentaire_date_min.date
+            indice_commentaire_min = 0
+
+            #On trouve le plus petit élément de la liste non triée
+            for i in range(1, len(liste_commentaires)):
+                commentaire_a_comparer = liste_commentaires[i][0]
+                date_a_comparer = commentaire_a_comparer.date
+
+                if(date_min.year > date_a_comparer.year):
+                    commentaire_date_min = liste_commentaires[i][0]
+                    date_min = commentaire_date_min.date
+                    indice_commentaire_min = i
+
+                if (date_min.year == date_a_comparer.year and date_min > date_a_comparer):
+                    commentaire_date_min = liste_commentaires[i][0]
+                    date_min = commentaire_date_min.date
+                    indice_commentaire_min = i
+
+            liste_commentaires_triee_dates_croissantes.append(liste_commentaires.pop(indice_commentaire_min))
+            
+        
+        #Si le trie est de la date la plus ancienne à la plus récente
+        if trie == "date-ancienne":
+            return liste_commentaires_triee_dates_croissantes
+
+        #Si le trie est de la date la plus récente à la plus ancienne
+        liste_commentaires_triee_dates_croissantes.reverse()
+        return liste_commentaires_triee_dates_croissantes
 

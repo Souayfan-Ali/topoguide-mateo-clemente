@@ -1,7 +1,6 @@
 from ast import keyword
 import datetime
 from re import I
-from tkinter import CASCADE
 from django.utils import timezone
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
